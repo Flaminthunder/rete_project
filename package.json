@@ -1,0 +1,47 @@
+{
+    "name": "retejs-v2-dataflow-engine",
+    "version": "1.0.0",
+    "description": null,
+    "keywords": [
+        "rete.js 2",
+        "rete.js"
+    ],
+    "main": "src/index.tsx",
+    "dependencies": {
+        "elkjs": "0.8.2",
+        "react": "18.0.0",
+        "react-dom": "18.0.0",
+        "react-scripts": "^5.0.1",
+        "rete": "2.0.1",
+        "rete-area-plugin": "2.0.0",
+        "rete-auto-arrange-plugin": "2.0.0",
+        "rete-connection-plugin": "2.0.0",
+        "rete-context-menu-plugin": "2.0.0",
+        "rete-engine": "2.0.0",
+        "rete-react-plugin": "2.0.1",
+        "rete-render-utils": "2.0.1",
+        "styled-components": "5.3.6",
+        "web-worker": "1.2.0"
+    },
+    "devDependencies": {
+        "@types/babel__generator": "^7.27.0",
+        "@types/babel__traverse": "^7.20.7",
+        "@types/eslint": "^9.6.1",
+        "@types/istanbul-lib-coverage": "^2.0.6",
+        "@types/react": "18.0.25",
+        "@types/react-dom": "18.0.9",
+        "typescript": "^4.9.5"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test --env=jsdom",
+        "eject": "react-scripts eject"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ]
+}

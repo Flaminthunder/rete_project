@@ -1,0 +1,15 @@
+/* styles.css */
+.App {
+  font-family: sans-serif;
+  /* text-align: center; // Remove if you don't want buttons centered */
+}
+body {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure Rete editor nodes look okay - default styles usually fine */
+.socket { /* Example for Rete sockets if you need to style them */
+  /* ... */
+}
