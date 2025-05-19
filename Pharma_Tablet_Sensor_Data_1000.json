@@ -1,0 +1,1561 @@
+[
+  {
+    "tablet_id": "TBT-20250519-00001",
+    "timestamp": "2025-05-19T05:30:00.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00002",
+    "timestamp": "2025-05-19T05:30:02.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.92,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.15
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00003",
+    "timestamp": "2025-05-19T05:30:04.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.3
+    },
+    "weight_scale": {
+      "weight_mg": 499.5,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00004",
+    "timestamp": "2025-05-19T05:30:06.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.05
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00005",
+    "timestamp": "2025-05-19T05:30:08.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 494.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.52,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00006",
+    "timestamp": "2025-05-19T05:30:10.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.2
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00007",
+    "timestamp": "2025-05-19T05:30:12.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 500.3,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00008",
+    "timestamp": "2025-05-19T05:30:14.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.12
+    },
+    "weight_scale": {
+      "weight_mg": 506.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00009",
+    "timestamp": "2025-05-19T05:30:16.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00010",
+    "timestamp": "2025-05-19T05:30:18.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.94,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.18
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00011",
+    "timestamp": "2025-05-19T05:30:20.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00012",
+    "timestamp": "2025-05-19T05:30:22.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.90,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.2
+    },
+    "weight_scale": {
+      "weight_mg": 499.7,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00013",
+    "timestamp": "2025-05-19T05:30:24.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.11
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00014",
+    "timestamp": "2025-05-19T05:30:26.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 507.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00015",
+    "timestamp": "2025-05-19T05:30:28.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.06
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00016",
+    "timestamp": "2025-05-19T05:30:30.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.25
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00017",
+    "timestamp": "2025-05-19T05:30:32.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00018",
+    "timestamp": "2025-05-19T05:30:34.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.93,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.17
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00019",
+    "timestamp": "2025-05-19T05:30:36.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00020",
+    "timestamp": "2025-05-19T05:30:38.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.22
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00021",
+    "timestamp": "2025-05-19T05:30:40.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00022",
+    "timestamp": "2025-05-19T05:30:42.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.91,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.19
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00023",
+    "timestamp": "2025-05-19T05:30:44.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.06
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00024",
+    "timestamp": "2025-05-19T05:30:46.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 508.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00025",
+    "timestamp": "2025-05-19T05:30:48.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00026",
+    "timestamp": "2025-05-19T05:30:50.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.27
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00027",
+    "timestamp": "2025-05-19T05:30:52.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00028",
+    "timestamp": "2025-05-19T05:30  {
+    "tablet_id": "TBT-20250519-00028",
+    "timestamp": "2025-05-19T05:30:54.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.94,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.16
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00029",
+    "timestamp": "2025-05-19T05:30:56.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00030",
+    "timestamp": "2025-05-19T05:30:58.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.23
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00031",
+    "timestamp": "2025-05-19T05:31:00.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 500.3,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00032",
+    "timestamp": "2025-05-19T05:31:02.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.92,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.18
+    },
+    "weight_scale": {
+      "weight_mg": 499.7,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00033",
+    "timestamp": "2025-05-19T05:31:04.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00034",
+    "timestamp": "2025-05-19T05:31:06.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 509.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00035",
+    "timestamp": "2025-05-19T05:31:08.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.06
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00036",
+    "timestamp": "2025-05-19T05:31:10.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.26
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00037",
+    "timestamp": "2025-05-19T05:31:12.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00038",
+    "timestamp": "2025-05-19T05:31:14.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.93,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.17
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00039",
+    "timestamp": "2025-05-19T05:31:16.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00040",
+    "timestamp": "2025-05-19T05:31:18.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.21
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00041",
+    "timestamp": "2025-05-19T05:31:20.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00042",
+    "timestamp": "2025-05-19T05:31:22.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.90,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.2
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00043",
+    "timestamp": "2025-05-19T05:31:24.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.06
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00044",
+    "timestamp": "2025-05-19T05:31:26.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 510.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00045",
+    "timestamp": "2025-05-19T05:31:28.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00046",
+    "timestamp": "2025-05-19T05:31:30.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.28
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00047",
+    "timestamp": "2025-05-19T05:31:32.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00048",
+    "timestamp": "2025-05-19T05:31:34.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.94,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.16
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00049",
+    "timestamp": "2025-05-19T05:31:36.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00050",
+    "timestamp": "2025-05-19T05:31:38.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.24
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00051",
+    "timestamp": "2025-05-19T05:31:40.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 500.3,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00052",
+    "timestamp": "2025-05-19T05:31:42.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.91,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.19
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00053",
+    "timestamp": "2025-05-19T05:31:44.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.06
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00054",
+    "timestamp": "2025-05-19T05:31:46.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 511.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00055",
+    "timestamp": "2025-05-19T05:31:48.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00056",
+    "timestamp": "2025-05-19T05:31:50.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.29
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00057",
+    "timestamp": "2025-05-19T05:31:52.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00058",
+    "timestamp": "2025-05-19T05:31:54.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.94,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.15
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00059",
+    "timestamp": "2025-05-19T05:31:56.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00060",
+    "timestamp": "2025-05-19T05:31:58.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.25
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00061",
+    "timestamp": "2025-05-19T05:32:00.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 500.3,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00062",
+    "timestamp": "2025-05-19T05:32:02.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.90,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.2
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00063",
+    "timestamp": "2025-05-19T05:32:04.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.06
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00064",
+    "timestamp": "2025-05-19T05:32:06.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 512.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00065",
+    "timestamp": "2025-05-19T05:32:08.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00066",
+    "timestamp": "2025-05-19T05:32:10.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.3
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00067",
+    "timestamp": "2025-05-19T05:32:12.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00068",
+    "timestamp": "2025-05-19T05:32:14.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.94,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.14
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00069",
+    "timestamp": "2025-05-19T05:32:16.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00070",
+    "timestamp": "2025-05-19T05:32:18.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.26
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00071",
+    "timestamp": "2025-05-19T05:32:20.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 500.3,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00072",
+    "timestamp": "2025-05-19T05:32:22.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.91,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.19
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00073",
+    "timestamp": "2025-05-19T05:32:24.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.06
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00074",
+    "timestamp": "2025-05-19T05:32:26.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 513.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00075",
+    "timestamp": "2025-05-19T05:32:28.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00076",
+    "timestamp": "2025-05-19T05:32:30.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.31
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00077",
+    "timestamp": "2025-05-19T05:32:32.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250514",
+    "timestamp": "2025-05-19T05:32:34.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.94,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.13
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00079",
+    "timestamp": "2025-05-19T05:32:36.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    " VGA": "TBT-20250519-00080",
+    "timestamp": "2025-05-19T05:32:38.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+ six
+      "color_match_score": 0.95,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.27
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00081",
+    "timestamp": "2025-05-19T05:32:40.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 500.3,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00082",
+    "timestamp": "2025-05-19T05:32:42.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.91,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.19
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00083",
+    "timestamp": "2025-05-19T05:32:44.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.99,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.06
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00084",
+    "timestamp": "2025-05-19T05:32:46.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.96,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.1
+    },
+    "weight_scale": {
+      "weight_mg": 514.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00085",
+    "timestamp": "2025-05-19T05:32:48.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.08
+    },
+    "weight_scale": {
+      "weight_mg": 499.8,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00086",
+    "timestamp": "2025-05-19T05:32:50.000Z",
+    "camera_inspection": {
+      "is_cracked": true,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.32
+    },
+    "weight_scale": {
+      "weight_mg": 500.2,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00087",
+    "timestamp": "2025-05-19T05:32:52.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.1,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00088",
+    "timestamp": "2025-05-19T05:32:54.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.94,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.12
+    },
+    "weight_scale": {
+      "weight_mg": 499.9,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.51,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00089",
+    "timestamp": "2025-05-19T05:32:56.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.97,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.09
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00090",
+    "timestamp": "2025-05-19T05:32:58.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.95,
+      "foreign_particle_detected": true,
+      "defect_severity": 0.28
+    },
+    "weight_scale": {
+      "weight_mg": 500.0,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.50,
+    "status": "Defective",
+    "diverter_action": "Reject"
+  },
+  {
+    "tablet_id": "TBT-20250519-00091",
+    "timestamp": "2025-05-19T05:33:00.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.98,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.07
+    },
+    "weight_scale": {
+      "weight_mg": 500.3,
+      "unit": "mg"
+    },
+    "belt_speed_mps": 0.49,
+    "status": "Good",
+    "diverter_action": "Pass"
+  },
+  {
+    "tablet_id": "TBT-20250519-00092",
+    "timestamp": "2025-05-19T05:33:02.000Z",
+    "camera_inspection": {
+      "is_cracked": false,
+      "color_match_score": 0.91,
+      "foreign_particle_detected": false,
+      "defect_severity": 0.19
+    },
+    "weight_scale":
