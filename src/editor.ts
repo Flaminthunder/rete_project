@@ -22,11 +22,14 @@ import {
     Presets as ContextMenuPresets
 } from "rete-context-menu-plugin";
 
-// --- Exported Data Structures (Define these early if Node methods return them) ---
+// --- Exported Data Structures ---
 interface BaseExportedNodeData { id: string; }
 interface ExportedRuleNodeData extends BaseExportedNodeData { label: string; type: "Rule"; numInputs: number; numOutputs: number; }
+interface ExportedActionNodeData extends BaseExportedNodeData { label: string; type: "Action"; numInputs: number; }
+enum LogicType { AND = "AND", OR = "OR" }
 interface ExportedLogicGateNodeData extends BaseExportedNodeData { type: LogicType; numInputs: number; }
-type ExportedNode = ExportedRuleNodeData | ExportedLogicGateNodeData;
+
+type ExportedNode = ExportedRuleNodeData | ExportedLogicGateNodeData | ExportedActionNodeData;
 interface ExportedConnectionData { id: string; sourceNodeId: string; sourceOutputKey: string; targetNodeId: string; targetInputKey: string; }
 interface Ruleset { nodes: ExportedNode[]; connections: ExportedConnectionData[]; }
 
@@ -65,8 +68,14 @@ class RuleNode extends ClassicPreset.Node<
     }
 
     private _updateDimensions(numInputs: number, numOutputs: number) {
-        const baseHeight = 80; const itemHeight = 25;
-        this.height = baseHeight + Math.max(numInputs, numOutputs) * itemHeight;
+        const titleHeight = 30;
+        const labelControlHeight = 35;
+        const socketHeight = 25;
+        const padding = 10;
+        const minBaseHeightWithoutSockets = titleHeight + labelControlHeight + padding;
+
+        this.height = minBaseHeightWithoutSockets + Math.max(numInputs, numOutputs) * socketHeight;
+        this.height = Math.max(this.height, 120);
     }
 
     getCustomData(): ExportedRuleNodeData {
@@ -77,16 +86,14 @@ class RuleNode extends ClassicPreset.Node<
     }
 }
 
-enum LogicType { AND = "AND", OR = "OR" }
 type LogicGateInputKey = `input${number}`;
-
 class LogicGateNode extends ClassicPreset.Node<
     { [key in LogicGateInputKey]?: ClassicPreset.Socket },
     { output: ClassicPreset.Socket },
     { numInputs: ClassicPreset.InputControl<"number"> }
 > {
     width = 180;
-    height = 120; // Initialize height
+    height = 120;
     public readonly nodeLogicType: LogicType;
     private editorRef: NodeEditor<Schemes> | null = null;
     private areaRef: AreaPlugin<Schemes, AreaExtra> | null = null;
@@ -102,55 +109,32 @@ class LogicGateNode extends ClassicPreset.Node<
         if (getEditor) this.editorRef = getEditor();
         if (getArea) this.areaRef = getArea();
 
-        const minInputs = (logicType === LogicType.AND || logicType === LogicType.OR) ? 2 : 1;
+        const minInputs = 2; // AND/OR gates need at least 2 inputs
 
         this.addControl(
             "numInputs",
             new ClassicPreset.InputControl("number", {
                 initial: Math.max(minInputs, initialNumInputs),
                 change: (value) => {
-                    // Get the value currently displayed in the control
                     const currentControlDisplayValue = this.controls.numInputs?.value;
-                    // Process the incoming value from the event (user input)
                     const desiredNumInputs = Math.max(minInputs, Math.floor(value as number));
-
-                    // Get the actual current number of input sockets
                     const currentSocketCount = Object.keys(this.inputs).length;
 
-                    // Only update sockets if the desired number is different from the actual number
                     if (desiredNumInputs !== currentSocketCount) {
                         this.updateInputSockets(desiredNumInputs);
                     }
 
-                    // Crucial Fix: Only call setValue on the control if the processed `desiredNumInputs`
-                    // is different from what the control was already displaying (`currentControlDisplayValue`),
-                    // OR if the raw input `value` was different from `desiredNumInputs` (e.g. user typed "1.5", we changed to "2").
-                    // This prevents recursion if the value is already correct and processed.
                     if (this.controls.numInputs &&
                         (currentControlDisplayValue !== desiredNumInputs || (value as number) !== desiredNumInputs)
                     ) {
-                        // Temporarily remove change listener to prevent recursion if setValue itself triggers change
-                        // This is an aggressive but sometimes necessary measure if the above check isn't enough.
-                        // However, the refined condition above should ideally suffice.
-                        // const originalOnChange = this.controls.numInputs.options?.change;
-                        // if (this.controls.numInputs.options) this.controls.numInputs.options.change = undefined;
-
                         this.controls.numInputs.setValue(desiredNumInputs);
-
-                        // Restore original change listener if removed
-                        // if (this.controls.numInputs.options && originalOnChange) this.controls.numInputs.options.change = originalOnChange;
                     }
-
-                    // Always request an area update if sockets might have changed,
-                    // or if the control's value was just programmatically corrected.
-                    // This needs to happen after potential setValue
                     this.areaRef?.update("node", this.id);
                 }
             })
         );
 
         this.addOutput("output", new ClassicPreset.Output(new ClassicPreset.Socket("socket"), "Out"));
-        // Set initial sockets based on the processed initial value
         this.updateInputSockets(Math.max(minInputs, initialNumInputs));
     }
 
@@ -161,7 +145,7 @@ class LogicGateNode extends ClassicPreset.Node<
         const socketInstance = new ClassicPreset.Socket("socket");
 
         if (newCount === currentCount) {
-            this._recalculateDimensions(); // Still good to call this
+            this._recalculateDimensions();
             return;
         }
 
@@ -191,15 +175,130 @@ class LogicGateNode extends ClassicPreset.Node<
 
     private _recalculateDimensions() {
         const numInputs = Object.keys(this.inputs).length;
-        const baseHeight = 80;
-        const itemHeight = 25;
-        this.height = baseHeight + (numInputs * itemHeight) + (1 * itemHeight);
+        const titleHeight = 30;
+        const numInputsControlHeight = 35;
+        const socketHeight = 25;
+        const padding = 10;
+        const outputSocketHeight = 25;
+
+        this.height = titleHeight + numInputsControlHeight + (numInputs * socketHeight) + outputSocketHeight + padding;
         this.height = Math.max(this.height, 120);
     }
 
     getCustomData(): ExportedLogicGateNodeData {
         const numInputs = Object.keys(this.inputs).length;
         return { id: this.id, type: this.nodeLogicType, numInputs };
+    }
+}
+
+class ActionNode extends ClassicPreset.Node<
+    { [key: `input${number}`]: ClassicPreset.Socket }, // Inputs
+    {}, // No Outputs
+    { label: ClassicPreset.InputControl<"text">; numInputs: ClassicPreset.InputControl<"number"> } // Controls
+> {
+    width = 180;
+    height = 150; // Initial height, will be recalculated
+    private editorRef: NodeEditor<Schemes> | null = null;
+    private areaRef: AreaPlugin<Schemes, AreaExtra> | null = null;
+
+    constructor(
+        initialLabel: string = "Action",
+        initialNumInputs: number = 1,
+        getEditor?: () => NodeEditor<Schemes>,
+        getArea?: () => AreaPlugin<Schemes, AreaExtra>
+    ) {
+        super(initialLabel);
+        if (getEditor) this.editorRef = getEditor();
+        if (getArea) this.areaRef = getArea();
+
+        this.addControl(
+            "label",
+            new ClassicPreset.InputControl("text", { initial: initialLabel, readonly: false })
+        );
+
+        const minInputs = 1; // Action node needs at least one input
+
+        this.addControl(
+            "numInputs",
+            new ClassicPreset.InputControl("number", {
+                initial: Math.max(minInputs, initialNumInputs),
+                change: (value) => {
+                    const currentControlDisplayValue = this.controls.numInputs?.value;
+                    const desiredNumInputs = Math.max(minInputs, Math.floor(value as number));
+                    const currentSocketCount = Object.keys(this.inputs).length;
+
+                    if (desiredNumInputs !== currentSocketCount) {
+                        this.updateInputSockets(desiredNumInputs);
+                    }
+
+                    if (this.controls.numInputs &&
+                        (currentControlDisplayValue !== desiredNumInputs || (value as number) !== desiredNumInputs)
+                    ) {
+                        this.controls.numInputs.setValue(desiredNumInputs);
+                    }
+                    this.areaRef?.update("node", this.id);
+                }
+            })
+        );
+        this.updateInputSockets(Math.max(minInputs, initialNumInputs));
+    }
+
+    private updateInputSockets(newCount: number) {
+        const currentInputs = this.inputs as { [key: `input${number}`]: ClassicPreset.Input<ClassicPreset.Socket> };
+        const currentInputKeys = Object.keys(currentInputs) as `input${number}`[];
+        const currentCount = currentInputKeys.length;
+        const socketInstance = new ClassicPreset.Socket("socket");
+
+        if (newCount === currentCount) {
+            this._recalculateDimensions();
+            return;
+        }
+
+        if (newCount > currentCount) {
+            for (let i = currentCount; i < newCount; i++) {
+                const newInputKey = `input${i}` as `input${number}`;
+                this.addInput(newInputKey, new ClassicPreset.Input(socketInstance, `Param ${i + 1}`));
+            }
+        } else if (newCount < currentCount) {
+            for (let i = currentCount - 1; i >= newCount; i--) {
+                const inputKeyToRemove = `input${i}` as `input${number}`;
+                if (this.editorRef && currentInputs[inputKeyToRemove]) {
+                    const connections = this.editorRef.getConnections();
+                    connections.forEach(conn => {
+                        if (conn.target === this.id && conn.targetInput === inputKeyToRemove) {
+                            this.editorRef?.removeConnection(conn.id);
+                        }
+                    });
+                }
+                if (currentInputs[inputKeyToRemove]) {
+                    this.removeInput(inputKeyToRemove);
+                }
+            }
+        }
+        this._recalculateDimensions();
+    }
+
+    private _recalculateDimensions() {
+        const numInputs = Object.keys(this.inputs).length;
+        const titleHeight = 30;
+        const labelControlHeight = 35;
+        const numInputsControlHeight = 35;
+        const socketHeight = 25;
+        const padding = 10;
+
+        this.height = titleHeight + labelControlHeight + numInputsControlHeight + (numInputs * socketHeight) + padding;
+        this.height = Math.max(this.height, 150);
+    }
+
+    getCustomData(): ExportedActionNodeData {
+        const labelControl = this.controls.label;
+        const numInputs = Object.keys(this.inputs).length;
+        return {
+            id: this.id,
+            label: labelControl.value || "Unnamed Action",
+            type: "Action",
+            numInputs
+        };
     }
 }
 
@@ -210,7 +309,7 @@ type SchemeConnectionForPlugins = ClassicPreset.Connection<SchemeNodeForPlugins,
 type Schemes = GetSchemes<SchemeNodeForPlugins, SchemeConnectionForPlugins>;
 
 // Union of your specific node class types for your own logic and casting
-type MyNodeClasses = RuleNode | LogicGateNode;
+type MyNodeClasses = RuleNode | LogicGateNode | ActionNode;
 
 type AreaExtra = ReactArea2D<Schemes> | ContextMenuExtra;
 
@@ -221,18 +320,15 @@ export async function createEditor(container: HTMLElement) {
     const connectionPlugin = new ConnectionPlugin<Schemes, AreaExtra>();
     const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot });
     const arrange: any = new AutoArrangePlugin();
-
     const selector = AreaExtensions.selector();
 
     AreaExtensions.selectableNodes(area, selector, {
         accumulating: AreaExtensions.accumulateOnCtrl()
     });
 
-    // Helper function to pass editor and area to LogicGateNode constructor
     const getEditorInstance = () => editor;
     const getAreaInstance = () => area;
 
-    // Function to remove a node and its connections
     const removeNodeAndConnections = (nodeIdToRemove: NodeId) => {
         const connectionsToRemove = editor.getConnections().filter(conn =>
             conn.source === nodeIdToRemove || conn.target === nodeIdToRemove
@@ -243,12 +339,12 @@ export async function createEditor(container: HTMLElement) {
         editor.removeNode(nodeIdToRemove);
     };
 
-
     const menuItems: (readonly [string, (() => SchemeNodeForPlugins) | (() => void)])[] = [
         ["Rule Node (1 In, 1 Out)", () => new RuleNode("New Rule", 1, 1)],
         ["Rule Node (2 In, 1 Out)", () => new RuleNode("Decision Rule", 2, 1)],
         ["Logic: AND", () => new LogicGateNode(LogicType.AND, 2, getEditorInstance, getAreaInstance)],
         ["Logic: OR", () => new LogicGateNode(LogicType.OR, 2, getEditorInstance, getAreaInstance)],
+        ["Action Node", () => new ActionNode("New Action", 1, getEditorInstance, getAreaInstance)],
         ["Delete", () => {
             const selectedIds = Array.from(selector.entities.keys());
             if (selectedIds.length === 0) return;
@@ -268,7 +364,15 @@ export async function createEditor(container: HTMLElement) {
     area.use(contextMenu);
 
     render.addPreset(ReactPresets.contextMenu.setup());
-    render.addPreset(ReactPresets.classic.setup());
+    render.addPreset(ReactPresets.classic.setup({
+        // You can customize node rendering here if needed, for example, to style ActionNode differently
+        // node: (props) => {
+        //   if (props.data instanceof ActionNode) {
+        //     // return custom JSX for ActionNode
+        //   }
+        //   return ReactPresets.classic.Node(props); // Default classic node
+        // }
+    }));
     connectionPlugin.addPreset(ConnectionPresets.classic.setup());
     arrange.addPreset(ArrangePresets.classic.setup());
 
@@ -284,12 +388,13 @@ export async function createEditor(container: HTMLElement) {
     const rule2 = new RuleNode("Condition B", 1, 1);
     const andGate = new LogicGateNode(LogicType.AND, 2, getEditorInstance, getAreaInstance);
     const resultRule = new RuleNode("Outcome X", 1, 1);
+    const actionNode1 = new ActionNode("Perform Task", 1, getEditorInstance, getAreaInstance);
 
     await editor.addNode(rule1);
     await editor.addNode(rule2);
     await editor.addNode(andGate);
     await editor.addNode(resultRule);
-    console.log("Nodes in editor after initial add:", editor.getNodes().map(n => n.id));
+    await editor.addNode(actionNode1);
 
     if (rule1.outputs['output0'] && (andGate.inputs as any)['input0' as LogicGateInputKey]) {
         await editor.addConnection(new ClassicPreset.Connection(rule1, 'output0', andGate, 'input0' as LogicGateInputKey) as SchemeConnectionForPlugins);
@@ -300,7 +405,9 @@ export async function createEditor(container: HTMLElement) {
     if (andGate.outputs['output'] && resultRule.inputs['input0']) {
         await editor.addConnection(new ClassicPreset.Connection(andGate, 'output', resultRule, 'input0') as SchemeConnectionForPlugins);
     }
-
+    if (resultRule.outputs['output0'] && (actionNode1.inputs as any)['input0']) {
+        await editor.addConnection(new ClassicPreset.Connection(resultRule, 'output0', actionNode1, 'input0') as SchemeConnectionForPlugins);
+    }
 
     await arrange.layout({
         zoom: false,
@@ -327,13 +434,14 @@ export async function createEditor(container: HTMLElement) {
         AreaExtensions.zoomAt(area, editor.getNodes());
     };
 
-    (window as any).addEditorNode = async (type: 'Rule' | 'AND' | 'OR', props?: any) => {
+    (window as any).addEditorNode = async (type: 'Rule' | 'AND' | 'OR' | 'Action', props?: any) => {
         let nodeToAdd;
         const defaultProps = { label: "New Node", numInputs: 1, numOutputs: 1, ...props };
         switch (type) {
             case 'Rule': nodeToAdd = new RuleNode(defaultProps.label, defaultProps.numInputs, defaultProps.numOutputs); break;
             case 'AND': nodeToAdd = new LogicGateNode(LogicType.AND, defaultProps.numInputs || 2, getEditorInstance, getAreaInstance); break;
             case 'OR': nodeToAdd = new LogicGateNode(LogicType.OR, defaultProps.numInputs || 2, getEditorInstance, getAreaInstance); break;
+            case 'Action': nodeToAdd = new ActionNode(defaultProps.label || "New Action", defaultProps.numInputs || 1, getEditorInstance, getAreaInstance); break;
             default: console.error("Unknown node type to add:", type); return;
         }
         if (nodeToAdd) {
@@ -377,13 +485,16 @@ function generateRuleset(
     connections: SchemeConnectionForPlugins[]
 ): Ruleset {
     const exportedNodes: ExportedNode[] = nodes.map(node => {
-        const customNode = node as MyNodeClasses;
+        const customNode = node as MyNodeClasses; // Cast to your union type
         if (customNode instanceof RuleNode) {
             return customNode.getCustomData();
         } else if (customNode instanceof LogicGateNode) {
             return customNode.getCustomData();
+        } else if (customNode instanceof ActionNode) {
+            return customNode.getCustomData();
         }
         console.error("Unknown node type in generateRuleset:", node.label, node.id);
+        // Fallback for unknown types, though ideally this shouldn't happen
         return { id: node.id, type: "Unknown", label: node.label } as any;
     });
     const exportedConnections: ExportedConnectionData[] = connections.map(conn => ({
