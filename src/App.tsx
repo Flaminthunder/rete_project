@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useEffect } from "react"; // Import useEffect
+import { useEffect } from "react";
 import { useRete } from "rete-react-plugin";
 import { createEditor } from "./editor";
 
@@ -14,6 +14,7 @@ export default function App() {
     }
   };
 
+  // Updated to include 'Action' type
   const handleAddNode = (type: 'Rule' | 'AND' | 'OR' | 'Action') => {
     if ((window as any).addEditorNode) {
       if (type === 'Rule') {
@@ -23,7 +24,8 @@ export default function App() {
       } else if (type === 'OR') {
         (window as any).addEditorNode(type, { numInputs: 2 });
       } else if (type === 'Action') {
-        (window as any).addEditorNode(type, { label: "New Action", numInputs: 1 });
+        // ActionNode only needs a label, numInputs is fixed at 1 by its class definition
+        (window as any).addEditorNode(type, { label: "New Action" });
       }
     } else {
       console.error("Add node function not available.");
