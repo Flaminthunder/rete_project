@@ -235,15 +235,7 @@ export async function createEditor(container: HTMLElement) {
     area.use(contextMenu);
 
     render.addPreset(ReactPresets.contextMenu.setup());
-    render.addPreset(ReactPresets.classic.setup({
-        // You can customize node rendering here if needed, for example, to style ActionNode differently
-        // node: (props) => {
-        //   if (props.data instanceof ActionNode) {
-        //     // return custom JSX for ActionNode
-        //   }
-        //   return ReactPresets.classic.Node(props); // Default classic node
-        // }
-    }));
+    render.addPreset(ReactPresets.classic.setup());
     connectionPlugin.addPreset(ConnectionPresets.classic.setup());
     arrange.addPreset(ArrangePresets.classic.setup());
 
@@ -357,7 +349,7 @@ function generateRuleset(
     connections: SchemeConnectionForPlugins[]
 ): Ruleset { /* ... as before ... */
     const exportedNodes: ExportedNode[] = nodes.map(node => {
-        const customNode = node as MyNodeClasses; // Cast to your union type
+        const customNode = node as MyNodeClasses;
         if (customNode instanceof RuleNode) {
             return customNode.getCustomData();
         } else if (customNode instanceof LogicGateNode) {

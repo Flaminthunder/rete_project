@@ -1,0 +1,94 @@
+{
+  "nodes": [
+    {
+      "id": "0d6a15adf0cd5483",
+      "label": "is_cracked == True",
+      "type": "Rule",
+      "numInputs": 1,
+      "numOutputs": 1
+    },
+    {
+      "id": "0de8a242a5220a2c",
+      "label": "weight > 0.8",
+      "type": "Rule",
+      "numInputs": 1,
+      "numOutputs": 1
+    },
+    {
+      "id": "1fb12c94a8933504",
+      "label": "color != 'blue'",
+      "type": "Rule",
+      "numInputs": 1,
+      "numOutputs": 1
+    },
+    {
+      "id": "01366d4137affbf7",
+      "label": "DISCARD",
+      "type": "Action",
+      "numInputs": 1
+    },
+    {
+      "id": "0265ef7cfac60ab8",
+      "label": "OR",
+      "type": "OR",
+      "numInputs": 2
+    },
+    {
+      "id": "f867a818e73006e2",
+      "label": "AND",
+      "type": "AND",
+      "numInputs": 2
+    }
+  ],
+  "connections": [
+    {
+      "id": "39928879edc6c58d",
+      "sourceNodeId": "0de8a242a5220a2c",
+      "sourceOutputKey": "output0",
+      "targetNodeId": "d457c743f1123980",
+      "targetInputKey": "input1"
+    },
+    {
+      "id": "75a4fad6ef547ed5",
+      "sourceNodeId": "0de8a242a5220a2c",
+      "sourceOutputKey": "output0",
+      "targetNodeId": "1d334c21a6d214a0",
+      "targetInputKey": "input1"
+    },
+    {
+      "id": "eb5185d309eb96c6",
+      "sourceNodeId": "0d6a15adf0cd5483",
+      "sourceOutputKey": "output0",
+      "targetNodeId": "0265ef7cfac60ab8",
+      "targetInputKey": "input0"
+    },
+    {
+      "id": "6b10d3c09f7f658f",
+      "sourceNodeId": "0de8a242a5220a2c",
+      "sourceOutputKey": "output0",
+      "targetNodeId": "0265ef7cfac60ab8",
+      "targetInputKey": "input1"
+    },
+    {
+      "id": "fa6755b470ae8099",
+      "sourceNodeId": "0265ef7cfac60ab8",
+      "sourceOutputKey": "output",
+      "targetNodeId": "f867a818e73006e2",
+      "targetInputKey": "input0"
+    },
+    {
+      "id": "6bdeafaa42380d43",
+      "sourceNodeId": "1fb12c94a8933504",
+      "sourceOutputKey": "output0",
+      "targetNodeId": "f867a818e73006e2",
+      "targetInputKey": "input1"
+    },
+    {
+      "id": "6fba311d1a69c413",
+      "sourceNodeId": "f867a818e73006e2",
+      "sourceOutputKey": "output",
+      "targetNodeId": "01366d4137affbf7",
+      "targetInputKey": "input0"
+    }
+  ]
+}

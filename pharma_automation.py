@@ -1,50 +1,18 @@
 import json
 import time
 from collections import deque
-
-# --- Configuration (Adjust these as per your actual process if needed) ---
-TABLET_WEIGHT_NOMINAL_MG = 500.0
-TABLET_WEIGHT_TOLERANCE_PERCENT = 2.0 # +/- 2%
-COLOR_MATCH_THRESHOLD = 0.95 # Example, for "Tablet Color Mismatch" if you use it
-
-# --- Rule Implementations ---
-# Keys MUST match 'label' of RuleNodes in your Rete JSON.
-RULE_IMPLEMENTATIONS = {
-    # Rules from your pharma_workflow.json:
-    "is_cracked == True": lambda data: data.get("camera_inspection", {}).get("is_cracked", False),
-    "weight > 0.8": lambda data: data.get("weight_scale", {}).get("weight_mg", 0) > 0.8,
-                       # !!! CRITICAL: Review this logic. Is 0.8 the correct threshold?
-                       # Or should it be relative to nominal weight?
-                       # e.g., data.get("weight_scale", {}).get("weight_mg", 0) > (TABLET_WEIGHT_NOMINAL_MG * 0.8 / 100) if 0.8 is a percentage
-                       # e.g., abs(data.get("weight_scale", {}).get("weight_mg", TABLET_WEIGHT_NOMINAL_MG) - TABLET_WEIGHT_NOMINAL_MG) > 0.8 if 0.8 is a delta
-    "color != 'blue'": lambda data: data.get("camera_inspection", {}).get("color_observed", "").lower() != "blue",
-
-    # Keep these from the dummy example if you might switch workflows or for reference
-    "Tablet Is Cracked": lambda data: data.get("camera_inspection", {}).get("is_cracked", False),
-    "Tablet Color Mismatch": lambda data: data.get("camera_inspection", {}).get("color_match_score", 1.0) < COLOR_MATCH_THRESHOLD,
-    "Tablet Weight Out of Spec": lambda data: not (
-        TABLET_WEIGHT_NOMINAL_MG * (1 - TABLET_WEIGHT_TOLERANCE_PERCENT / 100)
-        <= data.get("weight_scale", {}).get("weight_mg", TABLET_WEIGHT_NOMINAL_MG)
-        <= TABLET_WEIGHT_NOMINAL_MG * (1 + TABLET_WEIGHT_TOLERANCE_PERCENT / 100)
-    ),
-    "Foreign Particle Detected": lambda data: data.get("camera_inspection", {}).get("foreign_particle_detected", False),
-    "Defect Confirmed": lambda input_boolean: bool(input_boolean), # For rules processing other nodes' output
-}
+import csv
+import re # For parsing rule labels
+import os # For path manipulation
 
 # --- Action Implementations ---
-# Keys MUST match 'label' of ActionNodes in your Rete JSON.
 ACTION_IMPLEMENTATIONS = {
-    # Action from your pharma_workflow.json:
-    "DISCARD": lambda data, val: print(f"  ACTION >> DISCARDING tablet {data.get('tablet_id')} (Trigger value from OR gate: {val})"),
-
-    # Keep these from the dummy example if you might switch workflows or for reference
-    "Divert Defective Tablet": lambda data, val: print(f"  ACTION >> Diverting tablet {data.get('tablet_id')} due to defect (Trigger: {val})"),
-    "Raise Critical Alarm": lambda data, val: print(f"  ALARM  >> CRITICAL DEFECT on tablet {data.get('tablet_id')}! (Trigger: {val})"),
-    "Log Good Tablet": lambda data, val: print(f"  INFO   >> Tablet {data.get('tablet_id')} passed inspection (Defect signal: {val}).") if not val else None, # Special handling for dummy
-    "Log Minor Defect": lambda data, val: print(f"  WARN   >> Minor defect noted for tablet {data.get('tablet_id')}. (Trigger: {val})"),
-    "HALT": lambda data, val: print(f"  ACTION >> System HALT triggered for tablet {data.get('tablet_id')}. (Trigger value: {val})")
+    "DISCARD": lambda data_row, val: None,
 }
 
+SPECIAL_NON_ENTRY_RULES = {
+     "Defect Confirmed": lambda input_boolean: bool(input_boolean)
+}
 
 class WorkflowEngine:
     def __init__(self, workflow_json_path):
@@ -53,10 +21,6 @@ class WorkflowEngine:
         self.connections_to_target = {}
         self._load_workflow(workflow_json_path)
         self.node_order = self._get_topological_order()
-        if not self.node_order and self.nodes:
-            print("Error: Could not determine node processing order. Check for cycles or ensure graph is connected.")
-            print("Proceeding with loaded node order, but execution might be unpredictable for complex graphs.")
-            self.node_order = list(self.nodes.keys())
 
     def _load_workflow(self, filepath):
         try:
@@ -64,275 +28,314 @@ class WorkflowEngine:
                 workflow = json.load(f)
         except FileNotFoundError:
             print(f"Error: Workflow file '{filepath}' not found.")
+            self.nodes = {}
             return
         except json.JSONDecodeError as e:
             print(f"Error: Could not decode JSON from workflow file '{filepath}'. Details: {e}")
+            self.nodes = {}
             return
 
         for node_data in workflow.get("nodes", []):
             node_id = node_data["id"]
             self.nodes[node_id] = {
-                "id": node_id,
-                "type": node_data["type"],
-                "label": node_data.get("label", node_data["type"]),
-                "num_inputs": node_data.get("numInputs", 0),
-                "num_outputs": node_data.get("numOutputs", 0),
+                "id": node_id, "type": node_data["type"], "label": node_data.get("label", node_data["type"]),
+                "num_inputs": node_data.get("numInputs", 0), "num_outputs": node_data.get("numOutputs", 0),
                 "data": node_data
             }
             self.connections_from_source[node_id] = []
             self.connections_to_target[node_id] = []
 
         for conn_data in workflow.get("connections", []):
-            source_id = conn_data["sourceNodeId"]
-            target_id = conn_data["targetNodeId"]
-            
-            if source_id not in self.nodes:
-                print(f"Warning: Source node '{source_id}' for connection '{conn_data['id']}' not found. Skipping connection.")
-                continue
-            if target_id not in self.nodes:
-                print(f"Warning: Target node '{target_id}' for connection '{conn_data['id']}' not found. Skipping connection.")
-                continue
-
-            connection_info = {
-                "source_id": source_id,
-                "source_output_key": conn_data["sourceOutputKey"],
-                "target_id": target_id,
-                "target_input_key": conn_data["targetInputKey"],
-                "id": conn_data["id"]
+            source_id, target_id = conn_data["sourceNodeId"], conn_data["targetNodeId"]
+            if source_id not in self.nodes or target_id not in self.nodes: continue
+            conn_info = {
+                "source_id": source_id, "source_output_key": conn_data["sourceOutputKey"],
+                "target_id": target_id, "target_input_key": conn_data["targetInputKey"], "id": conn_data["id"]
             }
-            self.connections_from_source[source_id].append(connection_info)
-            self.connections_to_target[target_id].append(connection_info)
-        
-        num_loaded_connections = sum(len(v) for v in self.connections_from_source.values())
-        print(f"Loaded {len(self.nodes)} nodes and {num_loaded_connections} connections from workflow.")
-
+            self.connections_from_source[source_id].append(conn_info)
+            self.connections_to_target[target_id].append(conn_info)
 
     def _get_topological_order(self):
-        if not self.nodes:
-            return []
-            
-        in_degree = {node_id: 0 for node_id in self.nodes}
-        for node_id in self.nodes:
-            in_degree[node_id] = len(self.connections_to_target.get(node_id, []))
-            
+        if not self.nodes: return []
+        in_degree = {node_id: len(self.connections_to_target.get(node_id, [])) for node_id in self.nodes}
         queue = deque([node_id for node_id, degree in in_degree.items() if degree == 0])
-        sorted_order = []
-        
+        sorted_order, visited_in_sort = [], set()
         while queue:
             u_id = queue.popleft()
-            sorted_order.append(u_id)
-            
+            if u_id in visited_in_sort: continue
+            visited_in_sort.add(u_id); sorted_order.append(u_id)
             for conn_info in self.connections_from_source.get(u_id, []):
                 v_id = conn_info["target_id"]
                 if v_id in in_degree:
                     in_degree[v_id] -= 1
-                    if in_degree[v_id] == 0:
-                        queue.append(v_id)
-        
+                    if in_degree[v_id] == 0 and v_id not in visited_in_sort: queue.append(v_id)
         if len(sorted_order) != len(self.nodes):
-            print("Warning: Topological sort incomplete. Possible cycle or disconnected components.")
             for node_id in self.nodes:
-                if node_id not in sorted_order:
-                    sorted_order.append(node_id)
+                if node_id not in sorted_order: sorted_order.append(node_id)
         return sorted_order
 
-    def process_event(self, sensor_data):
-        print(f"\n--- Processing Event for Tablet: {sensor_data.get('tablet_id', 'Unknown')} ---")
-        evaluated_outputs = {node_id: {} for node_id in self.nodes}
+    def parse_rule_label(self, rule_label):
+        match = re.match(
+            r"^\s*([a-zA-Z_][\w_]*)\s*([!=<>]=?|[\<\>])\s*(True|False|[\d\.]+(?:[eE][+-]?\d+)?|'(?:[^']*)'|\"(?:[^\"]*)\")\s*$",
+            rule_label
+        )
+        if not match: return None, None, None, f"Invalid rule format: {rule_label}"
+        column_name, operator, value_str = match.group(1), match.group(2), match.group(3)
+        
+        parsed_value = None
+        if value_str.lower() == 'true': parsed_value = True
+        elif value_str.lower() == 'false': parsed_value = False
+        elif (value_str.startswith("'") and value_str.endswith("'")) or \
+             (value_str.startswith('"') and value_str.endswith('"')):
+            parsed_value = value_str[1:-1] # Store as string
+        else:
+            try: # Attempt to parse as float first
+                parsed_value = float(value_str)
+            except ValueError:
+                # If not float, and not bool/quoted string, it's an unquoted string or malformed number
+                # This case should ideally not happen if rule values are always bool, number, or quoted string
+                return None, None, None, f"Unrecognized rule value format: {value_str} in {rule_label}"
+        return column_name, operator, parsed_value, None
 
-        if not self.node_order:
-            print("  Error: Node order not determined. Cannot process event.")
-            return
+
+    def evaluate_condition(self, actual_value, operator, rule_value, rule_label_for_error=""):
+        # Try to make types compatible for comparison
+        # print(f"DEBUG: Pre-coercion: actual='{actual_value}' ({type(actual_value)}), op='{operator}', rule_val='{rule_value}' ({type(rule_value)})")
+        
+        a_val, r_val = actual_value, rule_value
+
+        if type(a_val) != type(r_val):
+            # Attempt coercion, preferring the type of the rule_value if it's not string,
+            # or if actual_value is string and rule_value is specific (bool/float).
+            if isinstance(r_val, bool) and isinstance(a_val, str):
+                if a_val.lower() == 'true': a_val = True
+                elif a_val.lower() == 'false': a_val = False
+                else: return False # String actual_value cannot be coerced to bool for comparison
+            elif isinstance(r_val, (int, float)) and isinstance(a_val, str):
+                try: a_val = float(a_val)
+                except (ValueError, TypeError): return False # String actual_value cannot be coerced to float
+            elif isinstance(a_val, (int, float)) and isinstance(r_val, str): # if rule value is a string number like '0.8'
+                try: r_val = float(r_val)
+                except (ValueError, TypeError): pass # keep r_val as string if not convertible, comparison will likely fail
+            elif isinstance(a_val, bool) and isinstance(r_val, str): # if rule value is 'True' or 'False'
+                if r_val.lower() == 'true': r_val = True
+                elif r_val.lower() == 'false': r_val = False
+                else: pass # keep r_val as string if not convertible
+
+        # print(f"DEBUG: Post-coercion: actual='{a_val}' ({type(a_val)}), op='{operator}', rule_val='{r_val}' ({type(r_val)})")
+
+        try:
+            if isinstance(a_val, bool) and isinstance(r_val, bool):
+                if operator == "==": return a_val == r_val
+                if operator == "!=": return a_val != r_val
+            elif isinstance(a_val, str) and isinstance(r_val, str):
+                # Case-insensitive comparison for strings
+                if operator == "==": return a_val.lower() == r_val.lower()
+                if operator == "!=": return a_val.lower() != r_val.lower()
+                # Other operators like >, < are not standard for strings in this context
+            elif isinstance(a_val, (int, float)) and isinstance(r_val, (int, float)):
+                if operator == "==": return a_val == r_val
+                if operator == "!=": return a_val != r_val
+                if operator == ">":  return a_val > r_val
+                if operator == "<":  return a_val < r_val
+                if operator == ">=": return a_val >= r_val
+                if operator == "<=": return a_val <= r_val
+            
+            # If types are still different after attempted coercion, it's a mismatch
+            # print(f"Warning: Type mismatch or unhandled operator for rule '{rule_label_for_error}'. Actual: {type(a_val)}, Rule: {type(r_val)}, Op: {operator}")
+            return False
+        except TypeError as e:
+            # print(f"Warning: TypeError during condition evaluation for rule '{rule_label_for_error}': {e}.")
+            return False
+
+    def process_event(self, row_data, row_num_for_log=""):
+        evaluated_outputs = {node_id: {} for node_id in self.nodes}
+        discard_action_triggered = False
+
+        if not self.node_order: return "ERROR_WORKFLOW_ORDER"
 
         for node_id in self.node_order:
             node = self.nodes.get(node_id)
-            if not node:
-                print(f"  Skipping: Node {node_id} referenced in order but not found in node list.")
-                continue
-
-            node_type = node["type"]
-            node_label = node["label"]
-            print(f"  Evaluating Node: '{node_label}' (ID: {node_id}, Type: {node_type})")
-
+            if not node: continue
+            node_type, node_label = node["type"], node["label"]
             current_node_inputs_values = {}
             incoming_connections = self.connections_to_target.get(node_id, [])
-            
             for conn in incoming_connections:
-                source_node_id = conn["source_id"]
-                source_output_key = conn["source_output_key"]
-                target_input_key = conn["target_input_key"]
-                
-                if source_node_id in evaluated_outputs and source_output_key in evaluated_outputs[source_node_id]:
-                    current_node_inputs_values[target_input_key] = evaluated_outputs[source_node_id][source_output_key]
-                else:
-                    print(f"    Warning: Input '{target_input_key}' for '{node_label}' from '{source_node_id}.{source_output_key}' not found. Defaulting to False.")
-                    current_node_inputs_values[target_input_key] = False 
+                s_id, s_key, t_key = conn["source_id"], conn["source_output_key"], conn["target_input_key"]
+                current_node_inputs_values[t_key] = evaluated_outputs.get(s_id, {}).get(s_key, False)
 
+            result = False
             if node_type == "Rule":
-                rule_func = RULE_IMPLEMENTATIONS.get(node_label)
-                if rule_func:
-                    result = False
-                    is_entry_rule = (node["num_inputs"] == 0) or \
-                                     (node["num_inputs"] > 0 and not any(c['target_id'] == node_id and c['target_input_key'] == 'input0' for c in incoming_connections if c['target_id'] == node_id)) # Check only connections to *this* node
+                is_entry_rule = not incoming_connections or node.get("num_inputs", 0) == 0
+                if is_entry_rule:
+                    column_name, operator, rule_val, parse_error = self.parse_rule_label(node_label)
+                    if parse_error:
+                        error_msg = f"ERROR_RULE_PARSE (Row {row_num_for_log}, Rule: '{node_label}', Reason: {parse_error})"
+                        # print(error_msg) # Optional: print to console
+                        return error_msg # Stop processing this row if rule is fundamentally unparsable
                     
-                    if is_entry_rule:
-                        try:
-                            result = rule_func(sensor_data)
-                            print(f"    Rule '{node_label}' (on sensor data) -> {result}")
-                        except Exception as e:
-                            print(f"    Error executing entry rule '{node_label}': {e}")
-                            result = False
-                    elif node["num_inputs"] > 0:
-                        input_val = current_node_inputs_values.get('input0', False)
-                        try:
-                            result = rule_func(input_val) 
-                            print(f"    Rule '{node_label}' (on input0='{input_val}') -> {result}")
-                        except Exception as e:
-                            print(f"    Error executing rule '{node_label}' with input '{input_val}': {e}")
-                            result = False
-                    else:
-                         print(f"    Warning: Rule '{node_label}' has unexpected input configuration. Defaulting to False.")
-                         result = False
+                    if column_name not in row_data:
+                        error_msg = f"ERROR_MISSING_COLUMN (Row {row_num_for_log}, Rule: '{node_label}', Column: '{column_name}')"
+                        # print(error_msg)
+                        return error_msg # Stop processing this row
+                    
+                    actual_val = row_data.get(column_name)
+                    result = self.evaluate_condition(actual_val, operator, rule_val, node_label)
 
-                    for i in range(node["num_outputs"]):
-                         evaluated_outputs[node_id][f"output{i}"] = result
-                else:
-                    print(f"    Warning: No implementation for RuleNode: '{node_label}'")
-                    for i in range(node.get("num_outputs", 0)):
-                        evaluated_outputs[node_id][f"output{i}"] = False
+                elif node_label in SPECIAL_NON_ENTRY_RULES:
+                    input_val = current_node_inputs_values.get('input0', False)
+                    result = SPECIAL_NON_ENTRY_RULES[node_label](input_val)
+                
+                for i in range(node.get("num_outputs", 0)): evaluated_outputs[node_id][f"output{i}"] = result
 
             elif node_type == "AND":
-                all_inputs_true = True
-                if node["num_inputs"] == 0:
-                    all_inputs_true = True
-                elif not current_node_inputs_values and node["num_inputs"] > 0:
-                    all_inputs_true = False
+                num_inputs = node.get("num_inputs", 0)
+                if num_inputs == 0: result = True
                 else:
-                    for i in range(node["num_inputs"]):
-                        input_key = f"input{i}"
-                        if not current_node_inputs_values.get(input_key, False):
-                            all_inputs_true = False
-                            break
-                evaluated_outputs[node_id]["output"] = all_inputs_true
-                print(f"    AND Gate -> {all_inputs_true} (Inputs: {current_node_inputs_values})")
-
+                    result = True
+                    for i in range(num_inputs):
+                        if not current_node_inputs_values.get(f"input{i}", False): result = False; break
+                evaluated_outputs[node_id]["output"] = result
+            
             elif node_type == "OR":
-                any_input_true = False
-                if node["num_inputs"] > 0 and current_node_inputs_values:
-                    for i in range(node["num_inputs"]):
-                        input_key = f"input{i}"
-                        if current_node_inputs_values.get(input_key, False):
-                            any_input_true = True
-                            break
-                evaluated_outputs[node_id]["output"] = any_input_true
-                print(f"    OR Gate -> {any_input_true} (Inputs: {current_node_inputs_values})")
+                num_inputs = node.get("num_inputs", 0)
+                if num_inputs == 0: result = False
+                else:
+                    result = False
+                    for i in range(num_inputs):
+                        if current_node_inputs_values.get(f"input{i}", False): result = True; break
+                evaluated_outputs[node_id]["output"] = result
 
             elif node_type == "Action":
                 action_func = ACTION_IMPLEMENTATIONS.get(node_label)
                 if action_func:
                     trigger_value = current_node_inputs_values.get("input0", False)
-                    
-                    if node_label == "Log Good Tablet" and "Log Good Tablet" in ACTION_IMPLEMENTATIONS : # For dummy workflow compatibility
-                        if not trigger_value: 
-                            print(f"    Action '{node_label}' (inverted logic for dummy) triggered because defect signal is False.")
-                            action_func(sensor_data, False)
-                        else:
-                            print(f"    Action '{node_label}' (inverted logic for dummy) not triggered (defect signal: {trigger_value}).")
-                    elif trigger_value: # Standard trigger on True
-                        print(f"    Action '{node_label}' triggered by input0: {trigger_value}")
-                        action_func(sensor_data, trigger_value)
-                    else:
-                        print(f"    Action '{node_label}' not triggered (input0: {trigger_value})")
-                else:
-                    print(f"    Warning: No implementation for ActionNode: '{node_label}'")
+                    if trigger_value:
+                        action_func(row_data, trigger_value)
+                        if node_label == "DISCARD": discard_action_triggered = True
         
-        print("--- Event Processing Complete ---")
+        return "DISCARD" if discard_action_triggered else "ACCEPT"
 
-def load_sensor_data_from_file(filepath):
+def load_csv_data(filepath):
+    data_list = []
+    expected_headers = None # To check consistency
     try:
-        with open(filepath, 'r') as f:
-            sensor_data_list = json.load(f)
-        if not isinstance(sensor_data_list, list):
-            print(f"Error: Sensor data file '{filepath}' should contain a JSON list of events.")
-            return []
-        print(f"Loaded {len(sensor_data_list)} sensor events from {filepath}")
-        return sensor_data_list
+        with open(filepath, mode='r', newline='', encoding='utf-8-sig') as csvfile: # utf-8-sig handles BOM
+            reader = csv.DictReader(csvfile)
+            if not reader.fieldnames:
+                print(f"Warning: CSV file '{filepath}' is empty or has no header row.")
+                return []
+            expected_headers = [h.strip() for h in reader.fieldnames] # Store cleaned headers
+
+            for i, row_dict in enumerate(reader):
+                processed_row = {}
+                # Ensure all expected headers are present, even if value is empty
+                for header in expected_headers:
+                    raw_value = row_dict.get(header) # Get value using original (potentially unstripped) header from DictReader
+                    
+                    # Intelligent type conversion for the value
+                    if raw_value is None or raw_value.strip() == "": # Handle None or empty strings
+                        processed_row[header] = None # Represent empty/missing as None
+                        continue
+
+                    value = raw_value.strip() # Use stripped value for conversions
+
+                    if value.lower() == 'true': processed_row[header] = True
+                    elif value.lower() == 'false': processed_row[header] = False
+                    else:
+                        try: # Attempt float conversion
+                            processed_row[header] = float(value)
+                        except ValueError: # If not float, keep as string
+                            processed_row[header] = value 
+                data_list.append(processed_row)
     except FileNotFoundError:
-        print(f"Error: Sensor data file '{filepath}' not found.")
-        return []
-    except json.JSONDecodeError as e:
-        print(f"Error: Could not decode JSON from sensor data file '{filepath}'. Details: {e}")
-        return []
+        print(f"Error: CSV data file '{filepath}' not found.")
+    except Exception as e:
+        print(f"Error reading CSV file '{filepath}': {e}")
+    return data_list
 
 if __name__ == "__main__":
-    rete_workflow_file = "pharma_workflow.json"
-    sensor_data_file = "Pharma_Tablet_Sensor_Data_1000.json"
+    workflow_file = "p4.json" 
+    input_csv_file = "pill_data.csv"      
+    output_csv_file = f"processed_{os.path.basename(input_csv_file)}_4"
 
-    # --- Check for actual Rete workflow JSON file ---
-    try:
-        with open(rete_workflow_file, 'r') as f:
-            json.load(f) # Validate if it's loadable JSON
-        print(f"Using existing Rete workflow file: {rete_workflow_file}")
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        if isinstance(e, FileNotFoundError):
-            print(f"Rete workflow file '{rete_workflow_file}' not found.")
-        else:
-            print(f"Error decoding existing Rete workflow file '{rete_workflow_file}': {e}")
-        
-        # Fallback to creating and using a DUMMY workflow if the primary one fails
-        print("Creating and using a DUMMY Rete workflow file: pharma_workflow_DUMMY.json for testing.")
-        dummy_workflow_content = {
+    engine = WorkflowEngine(workflow_file)
+    if not engine.nodes:
+        print(f"Primary workflow '{workflow_file}' failed to load. Check workflow file and console errors.")
+        # Attempt DUMMY workflow if primary fails (optional, remove if not desired)
+        dummy_workflow_file = "pharma_workflow_DUMMY.json"
+        print(f"Attempting to create and use a DUMMY workflow: {dummy_workflow_file}")
+        dummy_workflow_content = { # ... (dummy content from previous example) ... 
             "nodes": [
-                {"id": "rule_dummy_cracked_id", "label": "Tablet Is Cracked", "type": "Rule", "numInputs": 0, "numOutputs": 1},
-                {"id": "rule_dummy_weight_id", "label": "Tablet Weight Out of Spec", "type": "Rule", "numInputs": 0, "numOutputs": 1},
-                {"id": "rule_dummy_color_id", "label": "Tablet Color Mismatch", "type": "Rule", "numInputs": 0, "numOutputs": 1},
-                {"id": "logic_dummy_any_defect_id", "label": "OR", "type": "OR", "numInputs": 3},
-                {"id": "action_dummy_divert_id", "label": "Divert Defective Tablet", "type": "Action", "numInputs": 1},
-                {"id": "action_dummy_log_good_id", "label": "Log Good Tablet", "type": "Action", "numInputs": 1}
+                {"id": "r1", "label": "is_cracked == True", "type": "Rule", "numOutputs": 1},
+                {"id": "r2", "label": "weight > 0.9", "type": "Rule", "numOutputs": 1},
+                {"id": "r3", "label": "color == 'red'", "type": "Rule", "numOutputs": 1},
+                {"id": "r4", "label": "missing_column == True", "type": "Rule", "numOutputs": 1}, # To test error
+                {"id": "lg1", "label": "OR", "type": "OR", "numInputs": 3},
+                {"id": "act1", "label": "DISCARD", "type": "Action", "numInputs": 1}
             ],
             "connections": [
-                {"id": "conn_dummy_1", "sourceNodeId": "rule_dummy_cracked_id", "sourceOutputKey": "output0", "targetNodeId": "logic_dummy_any_defect_id", "targetInputKey": "input0"},
-                {"id": "conn_dummy_2", "sourceNodeId": "rule_dummy_weight_id", "sourceOutputKey": "output0", "targetNodeId": "logic_dummy_any_defect_id", "targetInputKey": "input1"},
-                {"id": "conn_dummy_3", "sourceNodeId": "rule_dummy_color_id", "sourceOutputKey": "output0", "targetNodeId": "logic_dummy_any_defect_id", "targetInputKey": "input2"},
-                {"id": "conn_dummy_4", "sourceNodeId": "logic_dummy_any_defect_id", "sourceOutputKey": "output", "targetNodeId": "action_dummy_divert_id", "targetInputKey": "input0"},
-                {"id": "conn_dummy_5", "sourceNodeId": "logic_dummy_any_defect_id", "sourceOutputKey": "output", "targetNodeId": "action_dummy_log_good_id", "targetInputKey": "input0"}
+                {"id": "c1", "sourceNodeId": "r1", "sourceOutputKey": "output0", "targetNodeId": "lg1", "targetInputKey": "input0"},
+                {"id": "c2", "sourceNodeId": "r2", "sourceOutputKey": "output0", "targetNodeId": "lg1", "targetInputKey": "input1"},
+                {"id": "c3", "sourceNodeId": "r3", "sourceOutputKey": "output0", "targetNodeId": "lg1", "targetInputKey": "input2"},
+                # Rule r4 (missing_column) is not connected to demonstrate separate error handling if needed
+                {"id": "c4", "sourceNodeId": "lg1", "sourceOutputKey": "output", "targetNodeId": "act1", "targetInputKey": "input0"}
             ]
         }
-        # Special handling for "Log Good Tablet" action for the DUMMY workflow
-        if "Log Good Tablet" in ACTION_IMPLEMENTATIONS:
-             ACTION_IMPLEMENTATIONS["Log Good Tablet"] = lambda data, val: print(f"  INFO   >> Tablet {data.get('tablet_id')} passed inspection (Defect signal was {val}).") if not val else None
+        try:
+            with open(dummy_workflow_file, 'w') as f: json.dump(dummy_workflow_content, f, indent=2)
+            engine = WorkflowEngine(dummy_workflow_file) # Re-initialize with dummy
+            if not engine.nodes:
+                 print(f"FATAL: Dummy workflow '{dummy_workflow_file}' also failed to load. Exiting.")
+                 exit()
+            print(f"Successfully loaded DUMMY workflow: {dummy_workflow_file}")
+            workflow_file = dummy_workflow_file # Update workflow_file to reflect dummy is used
+        except Exception as e_dummy:
+            print(f"FATAL: Could not create/load DUMMY workflow. Error: {e_dummy}. Exiting.")
+            exit()
+
+
+    all_input_data = load_csv_data(input_csv_file)
+    if not all_input_data:
+        print(f"No data loaded from '{input_csv_file}'. Cannot proceed.")
+        exit()
+
+    processed_data_with_output = []
+    print(f"\n=== STARTING BATCH PROCESSING FROM {input_csv_file} USING WORKFLOW {workflow_file} ===")
+    start_time = time.time()
+    error_count = 0
+
+    for i, data_row in enumerate(all_input_data):
+        row_log_num = i + 2 # CSV row number (1-based header + 1-based data)
+        decision = engine.process_event(data_row.copy(), row_log_num) 
         
-        rete_workflow_file = "pharma_workflow_DUMMY.json" 
-        with open(rete_workflow_file, 'w') as f:
-            json.dump(dummy_workflow_content, f, indent=2)
-        print(f"Using DUMMY workflow file: {rete_workflow_file}")
+        output_row = data_row.copy()
+        output_row['output'] = decision 
+        processed_data_with_output.append(output_row)
+        
+        if "ERROR_" in decision:
+            error_count += 1
+            print(f"  Pill {data_row.get('pill_id', 'N/A')} (Row {row_log_num}): {decision}") # Print errors immediately
 
-    
-    engine = WorkflowEngine(rete_workflow_file)
-    all_sensor_data = load_sensor_data_from_file(sensor_data_file)
+    end_time = time.time()
+    print(f"=== BATCH PROCESSING COMPLETE: {len(all_input_data)} pills processed in {end_time - start_time:.2f} seconds. Errors: {error_count} ===")
 
-    if not all_sensor_data:
-        print(f"No sensor data loaded from '{sensor_data_file}'.")
-        if not engine.nodes:
-            print("Workflow also failed to load. Cannot proceed.")
-        else:
-            print("Generating a few dummy sensor events for demonstration as data file was empty or not found.")
-            all_sensor_data = [
-                {"tablet_id": "SIM-GOOD-001", "timestamp": "2023-10-27T10:00:00Z", "camera_inspection": {"is_cracked": False, "color_match_score": 0.99, "foreign_particle_detected": False, "color_observed": "white"}, "weight_scale": {"weight_mg": 500.0}},
-                {"tablet_id": "SIM-CRACKED-002", "timestamp": "2023-10-27T10:00:01Z", "camera_inspection": {"is_cracked": True, "color_match_score": 0.98, "foreign_particle_detected": False, "color_observed": "white"}, "weight_scale": {"weight_mg": 501.0}},
-                {"tablet_id": "SIM-WEIGHT-BAD-003", "timestamp": "2023-10-27T10:00:02Z", "camera_inspection": {"is_cracked": False, "color_match_score": 0.99, "foreign_particle_detected": False, "color_observed": "white"}, "weight_scale": {"weight_mg": 0.5}}, # Example for "weight > 0.8"
-                {"tablet_id": "SIM-COLOR-BLUE-004", "timestamp": "2023-10-27T10:00:03Z", "camera_inspection": {"is_cracked": False, "color_match_score": 0.99, "foreign_particle_detected": False, "color_observed": "blue"}, "weight_scale": {"weight_mg": 500.0}}
-            ]
-            print(f"Generated {len(all_sensor_data)} dummy events.")
+    if processed_data_with_output:
+        if all_input_data:
+            # Use headers from the first row of loaded (and potentially type-converted) data
+            # This ensures headers match the keys used in processed_data_with_output
+            base_fieldnames = list(all_input_data[0].keys())
+            fieldnames = [fn for fn in base_fieldnames if fn != 'output'] + ['output'] # ensure 'output' is last
+        else: # Should not happen
+            fieldnames = ['output']
 
-
-    if engine.nodes and all_sensor_data:
-        for i, tablet_data in enumerate(all_sensor_data):
-            print(f"\nProcessing tablet data point #{i+1}...")
-            engine.process_event(tablet_data)
-            if i < len(all_sensor_data) - 1:
-                time.sleep(0.05)
-    elif not engine.nodes:
-        print("Workflow engine not initialized due to load error. Cannot process events.")
+        try:
+            with open(output_csv_file, mode='w', newline='', encoding='utf-8') as outfile:
+                writer = csv.DictWriter(outfile, fieldnames=fieldnames, extrasaction='ignore')
+                writer.writeheader()
+                writer.writerows(processed_data_with_output)
+            print(f"\nProcessed data saved to: {output_csv_file}")
+        except Exception as e:
+            print(f"Error writing output CSV '{output_csv_file}': {e}")
     else:
-        print(f"No sensor data available from '{sensor_data_file}' or dummy generation to process.")
+        print("No data was processed to write to output CSV.")
