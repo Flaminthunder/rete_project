@@ -1,34 +1,43 @@
 {
   "nodes": [
     {
-      "id": "d0af0da32b999c94",
-      "label": "node 1",
-      "type": "Rule",
-      "variableType": "str",
-      "codeLine": "color[:2] == 'bl'",
-      "numInputs": 1,
+      "id": "79f9d58b6abc8325",
+      "label": "Pill Data",
+      "type": "Source",
+      "source": "pill_data.csv",
       "numOutputs": 1
     },
     {
-      "id": "6d2e4aed74e9e5dd",
+      "id": "d7a4475decd73cd0",
+      "label": "High Potency",
+      "type": "Rule",
+      "variableType": "float",
+      "codeLine": "weight > 0.8",
+      "numInputs": 1,
+      "numOutputs": 1,
+      "source": "pill_data.csv"
+    },
+    {
+      "id": "5ec79962ce093159",
       "label": "DISCARD",
       "type": "Action",
-      "numInputs": 1
+      "numInputs": 1,
+      "source": "pill_data.csv"
     }
   ],
   "connections": [
     {
-      "id": "96b9d563d6ef1426",
-      "sourceNodeId": "491bd9848273e7d0",
+      "id": "cdc009f7720ab4db",
+      "sourceNodeId": "79f9d58b6abc8325",
       "sourceOutputKey": "output0",
-      "targetNodeId": "9bbfe4e34203bc83",
-      "targetInputKey": "input1"
+      "targetNodeId": "d7a4475decd73cd0",
+      "targetInputKey": "input0"
     },
     {
-      "id": "1eaab112120cb181",
-      "sourceNodeId": "d0af0da32b999c94",
+      "id": "71cdc32f1f1f25fe",
+      "sourceNodeId": "d7a4475decd73cd0",
       "sourceOutputKey": "output0",
-      "targetNodeId": "6d2e4aed74e9e5dd",
+      "targetNodeId": "5ec79962ce093159",
       "targetInputKey": "input0"
     }
   ]

@@ -14,8 +14,8 @@ export default function App() {
     }
   };
 
-  // Updated to include 'Action' type
-  const handleAddNode = (type: 'Rule' | 'AND' | 'OR' | 'Action') => {
+  // Updated to include 'Action' and 'Source' types
+  const handleAddNode = (type: 'Rule' | 'AND' | 'OR' | 'Action' | 'Source') => {
     if ((window as any).addEditorNode) {
       if (type === 'Rule') {
         (window as any).addEditorNode(type, { label: "New Rule", numInputs: 1, numOutputs: 1 });
@@ -24,8 +24,10 @@ export default function App() {
       } else if (type === 'OR') {
         (window as any).addEditorNode(type, { numInputs: 2 });
       } else if (type === 'Action') {
-        // ActionNode only needs a label, numInputs is fixed at 1 by its class definition
         (window as any).addEditorNode(type, { label: "New Action" });
+      } else if (type === 'Source') {
+        // SourceNode needs a label and a default filename
+        (window as any).addEditorNode(type, { label: "New Source", sourceFile: "filename.csv" });
       }
     } else {
       console.error("Add node function not available.");
@@ -68,6 +70,7 @@ export default function App() {
     <div className="App">
       <div style={{ padding: "10px", background: "#f0f0f0", borderBottom: "1px solid #ccc", display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ fontWeight: "bold", marginRight: "5px" }}>Add Nodes:</div>
+        <button onClick={() => handleAddNode('Source')} style={{ backgroundColor: "#e0e0e0", border: "1px solid #b0b0b0", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add Source</button>
         <button onClick={() => handleAddNode('Rule')} style={{ backgroundColor: "#cfe2f3", border: "1px solid #a2c4c9", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add Rule</button>
         <button onClick={() => handleAddNode('AND')} style={{ backgroundColor: "#d9ead3", border: "1px solid #b6d7a8", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add AND</button>
         <button onClick={() => handleAddNode('OR')} style={{ backgroundColor: "#d9ead3", border: "1px solid #b6d7a8", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add OR</button>

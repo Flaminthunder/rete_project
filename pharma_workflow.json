@@ -1,73 +1,43 @@
-{
+ {
   "nodes": [
     {
-      "id": "ac86f12aa7cd1067",
-      "label": "is_cracked == True",
-      "type": "Rule",
-      "numInputs": 1,
+      "id": "79f9d58b6abc8325",
+      "label": "Pill Data",
+      "type": "Source",
+      "source": "pill_data.csv",
       "numOutputs": 1
     },
     {
-      "id": "691790ed6c65db0d",
-      "label": "weight > 0.8",
+      "id": "d7a4475decd73cd0",
+      "label": "High Potency",
       "type": "Rule",
+      "variableType": "float",
+      "codeLine": "potency > 0.8",
       "numInputs": 1,
-      "numOutputs": 1
+      "numOutputs": 1,
+      "source": "pill_data.csv"
     },
     {
-      "id": "c89614344888fef5",
-      "label": "color != 'blue'",
-      "type": "Rule",
-      "numInputs": 1,
-      "numOutputs": 1
-    },
-    {
-      "id": "fc4b8507bd4e6244",
-      "label": "OR",
-      "type": "OR",
-      "numInputs": 3
-    },
-    {
-      "id": "f60a55a61e0b1f78",
+      "id": "5ec79962ce093159",
       "label": "DISCARD",
       "type": "Action",
-      "numInputs": 1
+      "numInputs": 1,
+      "source": "pill_data.csv"
     }
   ],
   "connections": [
     {
-      "id": "71bd938e68b3ef72",
-      "sourceNodeId": "691790ed6c65db0d",
+      "id": "cdc009f7720ab4db",
+      "sourceNodeId": "79f9d58b6abc8325",
       "sourceOutputKey": "output0",
-      "targetNodeId": "71cf393f949a5537",
-      "targetInputKey": "input1"
-    },
-    {
-      "id": "34c030465f23f816",
-      "sourceNodeId": "c89614344888fef5",
-      "sourceOutputKey": "output0",
-      "targetNodeId": "fc4b8507bd4e6244",
+      "targetNodeId": "d7a4475decd73cd0",
       "targetInputKey": "input0"
     },
     {
-      "id": "801a3a44affa809a",
-      "sourceNodeId": "ac86f12aa7cd1067",
+      "id": "71cdc32f1f1f25fe",
+      "sourceNodeId": "d7a4475decd73cd0",
       "sourceOutputKey": "output0",
-      "targetNodeId": "fc4b8507bd4e6244",
-      "targetInputKey": "input1"
-    },
-    {
-      "id": "b2697249cba26563",
-      "sourceNodeId": "691790ed6c65db0d",
-      "sourceOutputKey": "output0",
-      "targetNodeId": "fc4b8507bd4e6244",
-      "targetInputKey": "input2"
-    },
-    {
-      "id": "36afc9d6606e05e2",
-      "sourceNodeId": "fc4b8507bd4e6244",
-      "sourceOutputKey": "output",
-      "targetNodeId": "f60a55a61e0b1f78",
+      "targetNodeId": "5ec79962ce093159",
       "targetInputKey": "input0"
     }
   ]
