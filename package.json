@@ -20,7 +20,7 @@
         "rete-engine": "2.0.0",
         "rete-react-plugin": "2.0.1",
         "rete-render-utils": "2.0.1",
-        "styled-components": "5.3.6",
+        "styled-components": "^5.3.6",
         "web-worker": "1.2.0"
     },
     "devDependencies": {
@@ -30,6 +30,7 @@
         "@types/istanbul-lib-coverage": "^2.0.6",
         "@types/react": "18.0.25",
         "@types/react-dom": "18.0.9",
+        "@types/styled-components": "^5.1.34",
         "typescript": "^4.9.5"
     },
     "scripts": {

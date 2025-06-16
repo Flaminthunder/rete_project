@@ -1,0 +1,35 @@
+{
+  "nodes": [
+    {
+      "id": "d0af0da32b999c94",
+      "label": "node 1",
+      "type": "Rule",
+      "variableType": "str",
+      "codeLine": "color[:2] == 'bl'",
+      "numInputs": 1,
+      "numOutputs": 1
+    },
+    {
+      "id": "6d2e4aed74e9e5dd",
+      "label": "DISCARD",
+      "type": "Action",
+      "numInputs": 1
+    }
+  ],
+  "connections": [
+    {
+      "id": "96b9d563d6ef1426",
+      "sourceNodeId": "491bd9848273e7d0",
+      "sourceOutputKey": "output0",
+      "targetNodeId": "9bbfe4e34203bc83",
+      "targetInputKey": "input1"
+    },
+    {
+      "id": "1eaab112120cb181",
+      "sourceNodeId": "d0af0da32b999c94",
+      "sourceOutputKey": "output0",
+      "targetNodeId": "6d2e4aed74e9e5dd",
+      "targetInputKey": "input0"
+    }
+  ]
+}
