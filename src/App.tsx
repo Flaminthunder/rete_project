@@ -14,11 +14,16 @@ export default function App() {
     }
   };
 
-  // Updated to include 'Action' and 'Source' types
-  const handleAddNode = (type: 'Rule' | 'AND' | 'OR' | 'Action' | 'Source') => {
+  const handleAddNode = (type: 'Source' | 'Rule' | 'AND' | 'OR' | 'Action') => {
     if ((window as any).addEditorNode) {
       if (type === 'Rule') {
-        (window as any).addEditorNode(type, { label: "New Rule", numInputs: 1, numOutputs: 1 });
+        // RuleNode constructor is (initialLabel, numInputs, initialVariableType, initialCodeLine)
+        (window as any).addEditorNode(type, {
+          label: "New Rule",
+          numInputs: 1, // Default inputs
+          variableType: "string",
+          codeLine: "/* condition */"
+        });
       } else if (type === 'AND') {
         (window as any).addEditorNode(type, { numInputs: 2 });
       } else if (type === 'OR') {
@@ -26,8 +31,7 @@ export default function App() {
       } else if (type === 'Action') {
         (window as any).addEditorNode(type, { label: "New Action" });
       } else if (type === 'Source') {
-        // SourceNode needs a label and a default filename
-        (window as any).addEditorNode(type, { label: "New Source", sourceFile: "filename.csv" });
+        (window as any).addEditorNode(type, { label: "New Source", sourceFile: "data.csv" });
       }
     } else {
       console.error("Add node function not available.");

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Results</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        p { line-height: 1.6; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .stats { margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 4px; }
+        .stats strong { display: inline-block; width: 150px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Workflow Processing Complete</h1>
+        <p>Your workflow has been processed against the CSV data.</p>
+
+        {% if filename %}
+            <p>The processed output file is: <strong>{{ filename }}</strong></p>
+            <p><a href="{{ download_url }}">Download Processed CSV</a></p>
+        {% else %}
+            <p>No output file was generated (this might indicate an error or no data to process).</p>
+        {% endif %}
+
+        <!-- You can pass more stats from Flask if needed -->
+        <!-- Example:
+        {% if stats %}
+        <div class="stats">
+            <h2>Processing Statistics:</h2>
+            <p><strong>Total Rows Processed:</strong> {{ stats.total_processed }}</p>
+            <p><strong>Time Taken:</strong> {{ stats.time_taken }}</p>
+            <p><strong>Accepted:</strong> {{ stats.accepted }}</p>
+            <p><strong>Discarded:</strong> {{ stats.discarded }}</p>
+            <p><strong>Errors:</strong> {{ stats.errors }}</p>
+        </div>
+        {% endif %}
+        -->
+        <hr>
+        <p><a href="/">Back to Editor</a></p>
+    </div>
+</body>
+</html>
