@@ -5,43 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workflow Results</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; margin: 0; background-color: #f4f7f9; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        .container { background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; width: 100%; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 15px; margin-top: 0; }
         p { line-height: 1.6; }
-        a { color: #007bff; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .stats { margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 4px; }
-        .stats strong { display: inline-block; width: 150px; }
+        .download-link { display: inline-block; background-color: #3498db; color: white; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold; margin: 20px 0; transition: background-color 0.3s; }
+        .download-link:hover { background-color: #2980b9; }
+        .filename { font-family: 'Courier New', Courier, monospace; background-color: #ecf0f1; padding: 5px 8px; border-radius: 4px; color: #555; }
+        .stats { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+        .stats h2 { margin-top: 0; color: #34495e; }
+        .stats-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f2f2f2; }
+        .stats-item:last-child { border-bottom: none; }
+        .stats-item strong { color: #555; text-transform: capitalize; }
+        .back-link { display: block; margin-top: 30px; text-align: center; color: #7f8c8d; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Workflow Processing Complete</h1>
-        <p>Your workflow has been processed against the CSV data.</p>
 
-        {% if filename %}
-            <p>The processed output file is: <strong>{{ filename }}</strong></p>
-            <p><a href="{{ download_url }}">Download Processed CSV</a></p>
+        {% if filename and download_url %}
+            <p>The output file <span class="filename">{{ filename }}</span> is ready.</p>
+            <a href="{{ download_url }}" class="download-link">Download Processed CSV</a>
         {% else %}
-            <p>No output file was generated (this might indicate an error or no data to process).</p>
+            <p style="color: #c0392b;">No output file was generated. An error may have occurred.</p>
         {% endif %}
 
-        <!-- You can pass more stats from Flask if needed -->
-        <!-- Example:
         {% if stats %}
         <div class="stats">
-            <h2>Processing Statistics:</h2>
-            <p><strong>Total Rows Processed:</strong> {{ stats.total_processed }}</p>
-            <p><strong>Time Taken:</strong> {{ stats.time_taken }}</p>
-            <p><strong>Accepted:</strong> {{ stats.accepted }}</p>
-            <p><strong>Discarded:</strong> {{ stats.discarded }}</p>
-            <p><strong>Errors:</strong> {{ stats.errors }}</p>
+            <h2>Processing Statistics</h2>
+            {% for key, value in stats.items() %}
+                <div class="stats-item">
+                    <strong>{{ key.replace("_", " ") }}:</strong>
+                    <span>{{ value }}</span>
+                </div>
+            {% endfor %}
         </div>
         {% endif %}
-        -->
-        <hr>
-        <p><a href="/">Back to Editor</a></p>
+
+        <a href="/" class="back-link">Back to Workflow Editor</a>
     </div>
 </body>
 </html>

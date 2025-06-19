@@ -1,34 +1,106 @@
 /* src/styles.css */
+
+/* --- Global & App Layout --- */
 body {
-  overflow: hidden; /* Prevents scrollbars if editor is full screen */
+  overflow: hidden;
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background-color: #f0f0f0; /* Light grey background for the page */
+  background-color: #f0f0f0;
 }
 
 .App {
-  /* You can add app-specific global styles here if needed, but avoid overly broad selectors */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
-/* Rete.js Specific Styles */
+.editor-container {
+  flex-grow: 1;
+  height: 100%;
+}
 
-/* Node Styling */
+/* --- Toolbar Styling --- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 15px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #d9d9d9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toolbar-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.toolbar button, .toolbar select {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toolbar button:hover:not(:disabled), .toolbar select:hover:not(:disabled) {
+  border-color: #999;
+  background-color: #f0f0f0;
+}
+
+.toolbar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.toolbar button.primary {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+.toolbar button.primary:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.toolbar button.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+.toolbar button.danger:hover:not(:disabled) {
+  background-color: #f1b0b7;
+}
+
+.toolbar .process-group {
+  margin-left: auto;
+}
+
+/* --- Rete.js Node Styling --- */
 .node {
   background: white;
   border: 2px solid #555;
   border-radius: 10px;
   box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
-  padding-top: 15px;    /* Padding for the title/top area */
-  padding-bottom: 15px; /* Padding below the last element (sockets or controls) */
-  padding-left: 15px;   /* Padding for the content area left */
-  padding-right: 15px;  /* Padding for the content area right */
-  box-sizing: border-box; /* Node's own padding and border are within its JS width/height */
+  padding: 15px;
+  box-sizing: border-box;
   position: relative;
-  /* min-width is effectively set by the `width` property in JS for RuleNode/LogicGateNode */
   display: flex;
   flex-direction: column;
-  align-items: stretch; /* Make children like controls stretch to available width */
+  align-items: stretch;
 }
 
 .node.selected {
@@ -36,21 +108,18 @@ body {
   box-shadow: 0 0 12px rgba(52, 152, 219, 0.5);
 }
 
-/* Node Label (from super(label)) */
-/* This is the non-editable title part. Assumes Rete React preset renders a div with class "title" */
 .node > .title {
   font-weight: bold;
   font-size: 1em;
   color: #333;
-  margin-bottom: 10px; /* Space below the title before controls/sockets */
+  margin-bottom: 10px;
   text-align: center;
   cursor: default;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 20px; /* Ensure title area has some height even if label is short */
+  min-height: 20px;
 }
-
 
 /* Socket Styling */
 .socket {
@@ -58,10 +127,10 @@ body {
   height: 20px;
   background: #adadad;
   border: 1px solid #888;
-  border-radius: 10px; /* Circular sockets */
-  position: absolute;  /* Positioned relative to the node */
-  margin-top: -10px;   /* Vertically center (half of height) relative to its calculated `top` */
-  z-index: 2;          /* Sockets on top of connection lines */
+  border-radius: 10px;
+  position: absolute;
+  margin-top: -10px;
+  z-index: 2;
   box-sizing: border-box;
   cursor: pointer;
 }
@@ -72,29 +141,22 @@ body {
 }
 
 .socket.input {
-  left: -11px;  /* (socket_width/2 + socket_border_width) to sit on the edge */
+  left: -11px;
 }
 
 .socket.output {
-  right: -11px; /* (socket_width/2 + socket_border_width) */
+  right: -11px;
 }
 
-/* Control Styling (e.g., for InputControl) */
-/* This is the container Rete renders for each control (like the text input for node label, or number input) */
-.node .control { /* Targeting .control specifically within a .node for higher specificity */
-  width: 100%; /* Make the control container take the available width inside node's horizontal padding */
-  box-sizing: border-box; /* Crucial: its own padding/border included in its 100% width */
-  padding-left: 0;  /* Override any preset horizontal padding */
-  padding-right: 0; /* Override any preset horizontal padding */
-  /* Keep or adjust vertical padding from your preset or add your own */
-  padding-top: 6px; /* Example vertical padding from preset */
-  padding-bottom: 6px;/* Example vertical padding from preset */
+/* Control Styling */
+.node .control {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 0;
   font-size: 0.9em;
-  margin-top: 5px; /* Optional: space above control group if it's below a title */
+  margin-top: 5px;
 }
 
-/* If ClassicPreset.InputControl renders its own label element for the input field */
-/* This selector might need adjustment based on the exact HTML structure Rete generates */
 .node .control > div > label {
     display: block;
     margin-bottom: 3px;
@@ -102,40 +164,28 @@ body {
     font-size: 0.85em;
 }
 
-/* Target the input elements themselves */
-/* These selectors aim to cover common structures from Rete's classic preset */
 .node .control input[type="text"],
-.node .control input[type="number"],
-.node .control > div > input[type="text"],
-.node .control > div > input[type="number"] {
+.node .control input[type="number"] {
   display: block;
-  width: 100%; /* Input field takes 100% of its immediate parent (the .control div or an inner div) */
-  min-width: 0; /* Override browser default min-width for inputs */
+  width: 100%;
+  min-width: 0;
   padding: 8px;
-  margin: 0; /* Reset margin */
+  margin: 0;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 0.9em;
   font-family: inherit;
-  box-sizing: border-box; /* CRUCIAL: input's padding and border are inside its 100% width */
+  box-sizing: border-box;
 }
 
-/* Connection Styling (Using Rete default unless customized) */
-/* Example:
-.connection .main-path {
-  stroke-width: 3px;
-  stroke: #777;
-}
-*/
-
-/* Context Menu Styling (Using Rete default unless customized) */
+/* Context Menu Styling */
 .context-menu {
   background: white;
   border: 1px solid #ccc;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
   padding: 5px 0;
   min-width: 150px;
-  z-index: 100; /* Ensure context menu is on top */
+  z-index: 100;
 }
 .context-menu .item {
   padding: 8px 15px;
@@ -148,7 +198,7 @@ body {
   color: #aaa;
   cursor: default;
 }
-.context-menu .divider { /* If your context menu preset uses this class for dividers */
+.context-menu .divider {
   height: 1px;
   background: #eee;
   margin: 5px 0;

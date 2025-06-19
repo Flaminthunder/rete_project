@@ -1,97 +1,112 @@
 // src/App.tsx
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import { useRete } from "rete-react-plugin";
 import { createEditor } from "./editor";
+import './styles.css'; // Import the unified stylesheet
 
 export default function App() {
   const [ref] = useRete(createEditor);
+  const [isLoading, setIsLoading] = useState(false);
+  const [defaultAction, setDefaultAction] = useState('ACCEPT');
 
-  const handleExportWorkflow = () => {
-    if ((window as any).exportWorkflow) {
-      (window as any).exportWorkflow();
-    } else {
-      console.error("Export function not available.");
+  // This is the core function that connects the frontend to the backend
+  const handleProcessWorkflow = async () => {
+    setIsLoading(true); // Show a loading indicator on the button
+
+    if (!(window as any).exportWorkflow) {
+      alert("Editor is not ready. Please wait a moment and try again.");
+      setIsLoading(false);
+      return;
     }
-  };
+    
+    // 1. Get the workflow JSON from the editor
+    const ruleset = (window as any).exportWorkflow();
+    // 2. Combine it with the selected default action into a single payload
+    const payload = { ...ruleset, defaultAction };
 
-  const handleAddNode = (type: 'Source' | 'Rule' | 'AND' | 'OR' | 'Action') => {
-    if ((window as any).addEditorNode) {
-      if (type === 'Rule') {
-        // RuleNode constructor is (initialLabel, numInputs, initialVariableType, initialCodeLine)
-        (window as any).addEditorNode(type, {
-          label: "New Rule",
-          numInputs: 1, // Default inputs
-          variableType: "string",
-          codeLine: "/* condition */"
-        });
-      } else if (type === 'AND') {
-        (window as any).addEditorNode(type, { numInputs: 2 });
-      } else if (type === 'OR') {
-        (window as any).addEditorNode(type, { numInputs: 2 });
-      } else if (type === 'Action') {
-        (window as any).addEditorNode(type, { label: "New Action" });
-      } else if (type === 'Source') {
-        (window as any).addEditorNode(type, { label: "New Source", sourceFile: "data.csv" });
+    try {
+      // 3. Send the payload to the Flask API endpoint
+      const response = await fetch('/process_workflow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      // 4. Handle errors returned from the backend (e.g., bad workflow, file not found)
+      if (!response.ok) {
+        throw new Error(result.error || `HTTP error! Status: ${response.status}`);
       }
-    } else {
-      console.error("Add node function not available.");
+
+      // 5. On success, redirect the browser to the results page URL provided by Flask
+      if (result.results_page_url) {
+        window.location.href = result.results_page_url;
+      } else {
+        throw new Error("Processing succeeded, but the server did not provide a results page URL.");
+      }
+
+    } catch (error) {
+      // 6. Handle network errors or other exceptions
+      console.error("Failed to process workflow:", error);
+      alert(`An error occurred: ${error instanceof Error ? error.message : String(error)}`);
+      setIsLoading(false); // Reset loading state on error
     }
   };
 
+  // Helper functions to interact with the editor
+  const handleAddNode = (type: 'Source' | 'Rule' | 'AND' | 'OR' | 'Action') => {
+    if ((window as any).addEditorNode) (window as any).addEditorNode(type);
+  };
   const handleRemoveSelectedNodes = () => {
-    if ((window as any).removeSelectedEditorNodes) {
-      (window as any).removeSelectedEditorNodes();
-    } else {
-      console.error("Remove selected nodes function not available.");
-    }
+    if ((window as any).removeSelectedEditorNodes) (window as any).removeSelectedEditorNodes();
+  };
+  const handleArrange = () => {
+    if ((window as any).arrangeLayout) (window as any).arrangeLayout();
   };
 
-  const handleArrange = () => {
-    if ((window as any).arrangeLayout) {
-      (window as any).arrangeLayout();
-    } else {
-      console.error("Arrange function not available.");
-    }
-  }
-
+  // Keyboard shortcut for deleting nodes
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Delete' || event.key === 'Backspace') {
-        if (document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName.toUpperCase())) {
-            return;
-        }
+        const activeEl = document.activeElement?.tagName.toUpperCase();
+        if (activeEl === 'INPUT' || activeEl === 'TEXTAREA' || activeEl === 'SELECT') return;
         handleRemoveSelectedNodes();
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   return (
     <div className="App">
-      <div style={{ padding: "10px", background: "#f0f0f0", borderBottom: "1px solid #ccc", display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
-        <div style={{ fontWeight: "bold", marginRight: "5px" }}>Add Nodes:</div>
-        <button onClick={() => handleAddNode('Source')} style={{ backgroundColor: "#e0e0e0", border: "1px solid #b0b0b0", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add Source</button>
-        <button onClick={() => handleAddNode('Rule')} style={{ backgroundColor: "#cfe2f3", border: "1px solid #a2c4c9", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add Rule</button>
-        <button onClick={() => handleAddNode('AND')} style={{ backgroundColor: "#d9ead3", border: "1px solid #b6d7a8", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add AND</button>
-        <button onClick={() => handleAddNode('OR')} style={{ backgroundColor: "#d9ead3", border: "1px solid #b6d7a8", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add OR</button>
-        <button onClick={() => handleAddNode('Action')} style={{ backgroundColor: "#fce5cd", border: "1px solid #f4c795", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>Add Action</button>
-
-        <div style={{ marginLeft: "15px", fontWeight: "bold", marginRight: "5px" }}>Editor Actions:</div>
-        <button onClick={handleRemoveSelectedNodes} style={{ backgroundColor: "#ffdddd", border: "1px solid #ffb3b3", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>
-          Delete Selected
-        </button>
-        <button onClick={handleExportWorkflow} style={{ backgroundColor: "#e6e6e6", border: "1px solid #cccccc", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>
-          Export Workflow
-        </button>
-        <button onClick={handleArrange} style={{ backgroundColor: "#e6e6e6", border: "1px solid #cccccc", padding: "5px 10px", borderRadius: "4px", cursor: "pointer" }}>
-          Arrange Layout
-        </button>
+      <div className="toolbar">
+        <div className="toolbar-group">
+          <span className="toolbar-label">Add Node:</span>
+          <button onClick={() => handleAddNode('Source')}>Source</button>
+          <button onClick={() => handleAddNode('Rule')}>Rule</button>
+          <button onClick={() => handleAddNode('AND')}>AND</button>
+          <button onClick={() => handleAddNode('OR')}>OR</button>
+          <button onClick={() => handleAddNode('Action')}>Action</button>
+        </div>
+        <div className="toolbar-group">
+          <span className="toolbar-label">Editor:</span>
+          <button onClick={handleArrange}>Arrange</button>
+          <button onClick={handleRemoveSelectedNodes} className="danger">Delete</button>
+        </div>
+        <div className="toolbar-group process-group">
+          <span className="toolbar-label">Default Action:</span>
+          <select value={defaultAction} onChange={(e) => setDefaultAction(e.target.value)} disabled={isLoading}>
+            <option value="ACCEPT">ACCEPT</option>
+            <option value="DISCARD">DISCARD</option>
+          </select>
+          <button onClick={handleProcessWorkflow} disabled={isLoading} className="primary">
+            {isLoading ? 'Processing...' : 'Process Workflow'}
+          </button>
+        </div>
       </div>
-      <div ref={ref} style={{ height: "calc(100vh - 70px)", width: "100vw", backgroundColor: "#ddd" }}></div>
+      <div ref={ref} className="editor-container"></div>
     </div>
   );
 }

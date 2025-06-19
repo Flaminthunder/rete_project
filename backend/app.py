@@ -1,122 +1,132 @@
 from flask import Flask, request, jsonify, render_template, send_from_directory, url_for
 import json
 import os
-import time # For timestamped output files
-from pharma_automation import run_workflow_processing # Your existing Python logic
+import logging
+from pharma_automation import run_workflow_processing
 
+# --- Flask App Initialization ---
+# Best practice: configure static folder for the React build and template folder for results.
 app = Flask(__name__,
-            # Assuming 'backend' and 'build' are sibling directories
-            # static_url_path ensures that requests for /static/... go to this folder
             static_folder=os.path.join(os.path.dirname(__file__), '../build/static'),
-            template_folder='templates') # For results.html
+            template_folder='templates')
 
-# Configuration
+# --- Configuration & Setup ---
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_CSV_PATH = os.path.join(APP_ROOT, "pill_data.csv") # Ensure this file is in the backend folder
+DEFAULT_CSV_PATH = os.path.join(APP_ROOT, "pill_data.csv")
 PROCESSED_OUTPUT_DIR = os.path.join(APP_ROOT, "processed_output")
-REACT_BUILD_DIR = os.path.join(APP_ROOT, '../build') # Path to the root of the React build folder
+REACT_BUILD_DIR = os.path.join(APP_ROOT, '../build')
 
+# Ensure the output directory exists on startup
 os.makedirs(PROCESSED_OUTPUT_DIR, exist_ok=True)
 
+# Configure logging to be more informative than print()
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+
+# --- Static File Serving for React App ---
 @app.route('/')
 def index():
-    """Serve React App's index.html."""
-    print(f"Serving index.html from: {REACT_BUILD_DIR}")
+    """Serves the main index.html file of the React application."""
+    app.logger.info(f"Serving index.html from: {REACT_BUILD_DIR}")
     return send_from_directory(REACT_BUILD_DIR, 'index.html')
 
 @app.route('/<path:path>')
 def serve_react_static_files(path):
-    """
-    Serve other static files from the React build folder (e.g., manifest.json, favicon.ico).
-    Requests for /static/css/main.css or /static/js/main.js are handled by static_folder config.
-    This route handles files directly in the build root.
-    """
-    print(f"Attempting to serve static file: {path} from {REACT_BUILD_DIR}")
+    """Serves other static files from the React build directory (e.g., manifest, favicon)."""
     if os.path.exists(os.path.join(REACT_BUILD_DIR, path)):
         return send_from_directory(REACT_BUILD_DIR, path)
     else:
-        # Fallback for cases where path might be something like 'manifest.json'
-        # that isn't caught by the more specific static routes by default.
-        # This is a bit of a catch-all; might need refinement if certain files aren't found.
-        # The `static_folder` in Flask's constructor primarily handles /static/... routes.
-        # For root files like manifest.json, this explicit route is often needed.
-        return send_from_directory(REACT_BUILD_DIR, path)
+        # This primarily handles requests for /static/js, /static/css, which Flask
+        # routes to the `static_folder` defined in the constructor.
+        # This is a fallback for any other file.
+        app.logger.warning(f"Static file not found directly, falling back to static folder for path: {path}")
+        return send_from_directory(app.static_folder, path)
 
 
+# --- API Endpoint for Workflow Processing ---
 @app.route('/process_workflow', methods=['POST'])
 def process_workflow_route():
-    print("Received POST request at /process_workflow")
+    """
+    Receives a workflow JSON, processes it using the automation engine,
+    and returns the results.
+    """
+    app.logger.info("Received POST request at /process_workflow")
     if not request.is_json:
-        print("Error: Request is not JSON")
+        app.logger.error("Request failed: Content-Type is not application/json")
         return jsonify({"error": "Request must be JSON"}), 400
 
     workflow_data = request.get_json()
-    if not workflow_data:
-        print("Error: No workflow data in JSON body")
-        return jsonify({"error": "No workflow data provided"}), 400
+    if not workflow_data or "nodes" not in workflow_data:
+        app.logger.error("Request failed: No valid workflow data in JSON body")
+        return jsonify({"error": "No valid workflow data provided"}), 400
 
-    print("Received workflow data for processing:", json.dumps(workflow_data, indent=2))
+    app.logger.info("Received valid workflow data, starting processing...")
     input_csv_filepath = DEFAULT_CSV_PATH
-    print(f"Using input CSV: {input_csv_filepath}")
 
     if not os.path.exists(input_csv_filepath):
-        print(f"Error: Input CSV file not found at {input_csv_filepath}")
-        return jsonify({"error": f"Input CSV file not found at {input_csv_filepath}"}), 500
+        app.logger.error(f"Server configuration error: Input CSV file not found at {input_csv_filepath}")
+        return jsonify({"error": f"Server-side error: Input data file not found."}), 500
 
+    try:
+        # **CRITICAL CHANGE**: Wrap the call in a try block to catch specific errors
+        results = run_workflow_processing(workflow_data, input_csv_filepath, PROCESSED_OUTPUT_DIR)
+    except ValueError as e:
+        # This catches the "cycle detected" error from the engine's topological sort
+        app.logger.error(f"Workflow processing failed due to invalid graph: {e}")
+        return jsonify({"error": str(e)}), 400 # 400 Bad Request is appropriate for client-provided bad data
+    except Exception as e:
+        # Catch any other unexpected errors from the engine
+        app.logger.error(f"An unexpected error occurred during workflow processing: {e}", exc_info=True)
+        return jsonify({"error": "An internal server error occurred."}), 500
 
-    results = run_workflow_processing(workflow_data, input_csv_filepath, PROCESSED_OUTPUT_DIR)
-    print("Workflow processing results:", results)
+    app.logger.info(f"Workflow processing complete. Results: {results}")
 
     if results.get("error"):
+        # This handles errors that the engine caught internally (e.g., file write error)
         return jsonify(results), 500
-
-    processed_file_url = None
-    if results.get("output_file"):
-        # The filename itself (e.g., "processed_20231027-123456_pill_data.csv")
-        processed_file_url = url_for('serve_processed_file', filename=results.get("output_file"), _external=False)
-        # _external=True would generate full URL including domain, False generates relative path
-
-    results_page_url = None
-    if results.get("output_file"):
-        results_page_url = url_for('show_results_page', filename=results.get("output_file"))
-
+    
+    # Generate URLs for the frontend to use
+    download_url = url_for('serve_processed_file', filename=results.get("output_file"))
+    # Pass stats to the results page via query parameters for a richer display
+    stats_params = results.get("stats", {}).get("decisions", {})
+    results_page_url = url_for('show_results_page', filename=results.get("output_file"), **stats_params)
 
     return jsonify({
         "message": "Workflow processed successfully!",
         "stats": results.get("stats"),
         "output_filename": results.get("output_file"),
-        "download_url": processed_file_url, # Relative URL for download link
-        "results_page_url": results_page_url # Relative URL for results page
+        "download_url": download_url,
+        "results_page_url": results_page_url
     })
 
-@app.route('/processed_files/<path:filename>') # Use <path:filename> to handle subdirectories if any
+
+# --- File Download and Results Page Routes ---
+@app.route('/processed_files/<path:filename>')
 def serve_processed_file(filename):
-    """Serves files from the processed_output directory for download."""
-    print(f"Attempting to serve processed file: {filename} from {PROCESSED_OUTPUT_DIR}")
+    """Serves a processed file from the output directory for download."""
+    app.logger.info(f"Serving processed file for download: {filename}")
     return send_from_directory(PROCESSED_OUTPUT_DIR, filename, as_attachment=True)
 
 
 @app.route('/results/<path:filename>')
 def show_results_page(filename):
-    """Displays a page with results and download link."""
-    print(f"Showing results page for file: {filename}")
+    """Displays a page with a summary and a link to download the processed file."""
+    app.logger.info(f"Showing results page for file: {filename}")
+    # Regenerate download URL for the template
     download_url = url_for('serve_processed_file', filename=filename)
-    # You could also pass stats to the template if you retrieve them here
-    # For example, by saving stats to a temporary session or database, or passing as query params.
-    # For simplicity, we're just using the filename and regenerating the download URL.
-    return render_template('results.html', filename=filename, download_url=download_url)
+    # Get stats from the URL query parameters to display them
+    stats = request.args.to_dict()
+    return render_template('results.html', filename=filename, download_url=download_url, stats=stats)
 
 
+# --- Main Execution Block ---
 if __name__ == '__main__':
     if not os.path.exists(os.path.join(REACT_BUILD_DIR, 'index.html')):
-        print(f"ERROR: React frontend build not found in {REACT_BUILD_DIR}")
-        print("Please ensure you have run 'npm run build' in your frontend's root directory,")
-        print("and that this script is located in a 'backend' folder sibling to the 'build' folder.")
+        app.logger.critical(f"FATAL ERROR: React frontend build not found in {REACT_BUILD_DIR}")
+        app.logger.critical("1. Ensure you are in the 'backend' directory when running this script.")
+        app.logger.critical("2. Run 'npm run build' in your frontend's root directory.")
     else:
-        print(f"Serving React app from: {REACT_BUILD_DIR}")
-        print(f"Static assets (like CSS/JS) are served from: {app.static_folder}")
-        print(f"Processed files will be saved to: {PROCESSED_OUTPUT_DIR}")
-        print(f"Output files will be downloadable from /processed_files/<filename>")
-        print(f"Results page will be at /results/<filename>")
+        app.logger.info(f"Starting Flask server...")
+        app.logger.info(f"Serving React app from: {REACT_BUILD_DIR}")
+        app.logger.info(f"API endpoint available at /process_workflow")
         app.run(debug=True, host='0.0.0.0', port=5001)
