@@ -311,7 +311,7 @@ export async function createEditor(container: HTMLElement) {
 
     // Initial nodes
     const source1 = new SourceNode("Pill Data", "pill_data.csv");
-    const rule1 = new RuleNode("Crack Rule", 1, "float", "is_cracked > 0.8"); // Updated constructor
+    const rule1 = new RuleNode("Weight Rule", 1, "float", "weight > 0.8"); // Updated constructor
     const rule2 = new RuleNode("Color Rule", 1, "string", "color == 'blue'");  // Updated constructor
     const andGate = new LogicGateNode(LogicType.AND, 2, getEditorInstance, getAreaInstance);
     const action1 = new ActionNode("DISCARD");
