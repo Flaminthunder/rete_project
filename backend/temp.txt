@@ -1,0 +1,4 @@
+99.95 <= height <= 100.05
+49.99 <= diameter <= 50.01
+auto.csv
+float
